@@ -1,77 +1,80 @@
-import { useState } from 'react'
-import { useAuthStore } from './authStore'
+import { Link } from '@tanstack/react-router'
+import logo from '@/assets/logo.png'
 
 export function AuthPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const { login } = useAuthStore()
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Simulation d'une connexion
-    login({
-      id: '1',
-      name: 'Utilisateur Test',
-      email: email,
-    })
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-orange-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Connexion à AnkoCitan
+        {/* Logo et titre */}
+        <div className="text-center">
+          <div className="flex justify-center mb-6">
+            <img 
+              src={logo} 
+              alt="Logo Ankòccitan" 
+              className="h-16 w-16 transition-transform duration-300 hover:scale-110" 
+            />
+          </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            Authentification
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Connectez-vous pour accéder à vos decks
+          <p className="text-gray-600">
+            L'authentification sera bientôt disponible avec Supabase
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="email" className="sr-only">
-                Adresse email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Adresse email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Mot de passe
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
 
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Se connecter
-            </button>
+        {/* Message informatif */}
+        <div className="bg-white rounded-xl shadow-xl p-8 border border-gray-100 text-center">
+          <div className="mb-6">
+            <svg className="mx-auto h-12 w-12 text-occitan-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
           </div>
-        </form>
+          
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Fonctionnalité en cours de développement
+          </h3>
+          
+          <p className="text-gray-600 mb-6">
+            Nous travaillons actuellement sur l'intégration de Supabase pour l'authentification. 
+            Cette fonctionnalité sera bientôt disponible !
+          </p>
+          
+          <div className="space-y-4">
+            <Link
+              to="/dashboard"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-occitan-red to-occitan-orange hover:from-occitan-orange hover:to-occitan-red focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange transition-all duration-200"
+            >
+              Voir le Dashboard (Démo)
+            </Link>
+            
+            <Link
+              to="/"
+              className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange transition-all duration-200"
+            >
+              Retour à l'accueil
+            </Link>
+          </div>
+        </div>
+
+        {/* Liens légaux */}
+        <div className="text-center text-sm text-gray-500">
+          <p>
+            En continuant, vous acceptez nos{' '}
+            <Link 
+              to="/terms" 
+              className="text-occitan-red hover:text-occitan-orange underline transition-colors duration-200"
+            >
+              conditions d'utilisation
+            </Link>{' '}
+            et notre{' '}
+            <Link 
+              to="/privacy" 
+              className="text-occitan-red hover:text-occitan-orange underline transition-colors duration-200"
+            >
+              politique de confidentialité
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )

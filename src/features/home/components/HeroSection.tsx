@@ -1,60 +1,67 @@
-import { FaRocket, FaStar, FaHeart } from 'react-icons/fa';
-import { CallToAction } from './CallToAction';
+import { FaRocket } from 'react-icons/fa';
+import { Link } from '@tanstack/react-router';
 
 export function HeroSection() {
   return (
-    <section className="w-full pt-20 pb-12 text-center relative overflow-hidden bg-gradient-to-br from-occitan-cream via-white to-occitan-light">
-      {/* Éléments décoratifs subtils */}
-      <div className="absolute top-8 left-8 w-12 h-12 bg-occitan-yellow rounded-full opacity-10 animate-pulse"></div>
-      <div className="absolute bottom-8 right-8 w-8 h-8 bg-occitan-red rounded-full opacity-10 animate-pulse delay-1000"></div>
+    <section className="relative w-full py-20 bg-gradient-to-b from-orange-50 to-white overflow-hidden">
+      {/* Emojis éducatifs en décor, nombreux, même opacité */}
+      {[
+        { emoji: '📚', pos: 'left-8 top-4', size: 'text-7xl', rot: 'rotate-6' },
+        { emoji: '🎓', pos: 'right-16 top-10', size: 'text-6xl', rot: '-rotate-12' },
+        { emoji: '✏️', pos: 'left-1/3 bottom-10', size: 'text-5xl', rot: 'rotate-12' },
+        { emoji: '📖', pos: 'right-1/4 bottom-20', size: 'text-8xl', rot: '-rotate-6' },
+        { emoji: '📝', pos: 'left-2/3 top-20', size: 'text-4xl', rot: 'rotate-3' },
+        { emoji: '📐', pos: 'right-8 bottom-8', size: 'text-5xl', rot: '-rotate-15' },
+        { emoji: '🖍️', pos: 'left-24 top-32', size: 'text-6xl', rot: 'rotate-12' },
+        { emoji: '🖊️', pos: 'right-1/2 top-16', size: 'text-5xl', rot: '-rotate-6' },
+        { emoji: '📒', pos: 'left-1/4 bottom-2', size: 'text-7xl', rot: 'rotate-3' },
+        { emoji: '📏', pos: 'right-1/3 bottom-4', size: 'text-6xl', rot: 'rotate-12' },
+        { emoji: '📔', pos: 'left-1/2 top-1/4', size: 'text-5xl', rot: '-rotate-12' },
+        { emoji: '🖋️', pos: 'right-20 bottom-24', size: 'text-4xl', rot: 'rotate-6' },
+      ].map(({ emoji, pos, size, rot }, i) => (
+        <span
+          key={i}
+          className={`
+            absolute ${pos} ${size} ${rot} opacity-30
+            select-none pointer-events-none
+            hidden sm:block
+          `}
+        >
+          {emoji}
+        </span>
+      ))}
 
-      <div className="max-w-screen-xl mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Titre principal avec animation de couleur */}
-          <div className="mb-6">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-3">
-              Ankòccitan,{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-occitan-red via-occitan-orange to-occitan-yellow animate-gradient-x">
-                kézaco ?
-              </span>
-            </h1>
-            <div className="flex items-center justify-center space-x-2 text-occitan-orange">
-              <FaHeart className="w-4 h-4 animate-pulse" />
-              <span className="text-base font-medium">La langue occitane à portée de main</span>
-              <FaHeart className="w-4 h-4 animate-pulse delay-500" />
-            </div>
-          </div>
-
-          {/* Sous-titre avec effet de révélation */}
-          <p className="text-xl sm:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed animate-fade-in">
-            Crée et partage de <span className="font-semibold text-occitan-red">formidables decks Anki</span> pour apprendre l'occitan
+      <div className="max-w-3xl mx-auto mt-12 relative z-10">
+        {/* Glassmorphism wrapper */}
+        <div className="bg-white/20 backdrop-blur-lg rounded-3xl p-12 shadow-xl border border-white/30 text-center">
+          {/* Titre principal avec animation glow sur kézaco */}
+          <h1 className="text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 leading-tight tracking-tight">
+            Ankòccitan,{' '}
+            <span 
+              className="text-occitan-red animate-pulse"
+              style={{ 
+                letterSpacing: '0.01em',
+                textShadow: '0 0 10px rgba(215, 38, 56, 0.6)'
+              }}
+            >
+              kézaco ?
+            </span>
+          </h1>
+          
+          {/* Sous-titre */}
+          <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Votre générateur de cartes ANKI pour l'Occitan
           </p>
-
-          {/* Bouton CTA avec effet moderne */}
-          <div className="relative group animate-fade-in animation-delay-300">
-            <div className="absolute -inset-1 bg-gradient-to-r from-occitan-red to-occitan-orange rounded-xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-            <CallToAction
-              text="Commencer maintenant"
-              href="/auth"
-              variant="primary"
-              size="lg"
-              icon={<FaRocket />}
-              className="relative hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-
-          {/* Badge de confiance avec compteurs */}
-          <div className="mt-8 flex items-center justify-center space-x-4 text-sm text-gray-500 animate-fade-in animation-delay-500">
-            <div className="flex items-center space-x-1">
-              <FaStar className="text-occitan-yellow" />
-              <span><span className="font-bold text-occitan-red">1000+</span> decks créés</span>
-            </div>
-            <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-            <div className="flex items-center space-x-1">
-              <FaHeart className="text-occitan-red" />
-              <span><span className="font-bold text-occitan-red">500+</span> apprenants</span>
-            </div>
-          </div>
+          
+          {/* Bouton principal */}
+          <Link
+            to="/auth"
+            search={{ mode: 'register' }}
+            className="inline-flex items-center bg-gradient-to-r from-orange-400 to-red-500 hover:from-red-500 hover:to-orange-400 text-white font-semibold px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-2xl transform"
+          >
+            <FaRocket className="mr-2" />
+            Commencer maintenant
+          </Link>
         </div>
       </div>
     </section>

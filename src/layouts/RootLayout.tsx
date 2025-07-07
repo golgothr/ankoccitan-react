@@ -12,7 +12,7 @@ export function RootLayout() {
             <div className="flex justify-between h-16">
               <div className="flex items-center">
                 <Link to="/" className="text-xl font-bold text-gray-900">
-                  AnkoCitan
+                  Ankòccitan
                 </Link>
               </div>
               <div className="flex items-center space-x-4">
@@ -29,10 +29,10 @@ export function RootLayout() {
                   Connexion
                 </Link>
                 <Link
-                  to="/profile"
+                  to="/dashboard"
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  Profil
+                  Dashboard
                 </Link>
               </div>
             </div>

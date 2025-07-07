@@ -4,7 +4,8 @@
 Créer une base de projet React TypeScript pour une **webapp collaborative et évolutive**, avec une **architecture modulaire feature-first** et une structure claire, facilement maintenable.
 
 ## Contraintes techniques :
-- React + TypeScript
+- React 18 (version stable, ne pas utiliser React 19)
+- TypeScript
 - CSS : Tailwind CSS
 - Routing : TanStack Router
 - State management : Zustand
@@ -28,6 +29,12 @@ Créer une base de projet React TypeScript pour une **webapp collaborative et é
 - Configuration complète des outils de qualité de code (ESLint, Prettier, Husky, Commitlint, Lint-staged)
 - Préparation des scripts npm pour les tests, les hooks Git, et les conventions de commit
 - Configuration de Storybook et création d'un premier story de composant de base
+
+## Versions imposées :
+- React : 18.x.x stable uniquement. Ne pas utiliser React 19.
+- TypeScript : dernière version stable
+- TanStack Router, Zustand, React Query : versions stables recommandées compatibles avec React 18
+- Tailwind CSS : dernière version stable
 
 ## Attendu :
 - 📂 Arborescence du projet :
@@ -59,7 +66,7 @@ package.json
 README.md
 
 - 📦 Dépendances installées et configurées :
-- React, TypeScript, Tailwind CSS
+- React 18 stable, TypeScript, Tailwind CSS
 - TanStack Router, Zustand, React Query, Axios
 - ESLint, Prettier, Husky, Lint-staged, Commitizen, Commitlint
 - Vitest (ou Jest), React Testing Library

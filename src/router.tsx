@@ -1,13 +1,17 @@
-import { createRouter, createRoute, createRootRoute } from '@tanstack/react-router'
-import { RootLayout } from '@/layouts/RootLayout'
+import { createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router'
 import { HomePage } from '@/features/home/HomePage'
-import { DashboardPage } from '@/features/decks/HomePage'
 import { AuthPage } from '@/features/auth/AuthPage'
-import { UserProfilePage } from '@/features/users/UserProfilePage'
+import { DashboardPage } from '@/features/dashboard/DashboardPage'
+import { TermsPage } from '@/features/legal/TermsPage'
+import { PrivacyPage } from '@/features/legal/PrivacyPage'
 
-// Root route avec layout
+// Route racine simplifiée
 const rootRoute = createRootRoute({
-  component: RootLayout,
+  component: () => (
+    <div className="min-h-screen bg-gray-50">
+      <Outlet />
+    </div>
+  ),
 })
 
 // Routes principales
@@ -17,28 +21,45 @@ const indexRoute = createRoute({
   component: HomePage,
 })
 
-const dashboardRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/dashboard',
-  component: DashboardPage,
-})
-
 const authRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/auth',
   component: AuthPage,
 })
 
-const profileRoute = createRoute({
+// Route dashboard simplifiée (sans protection pour le moment)
+const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/profile',
-  component: UserProfilePage,
+  path: '/dashboard',
+  component: DashboardPage,
+})
+
+// Routes légales
+const termsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/terms',
+  component: TermsPage,
+})
+
+const privacyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/privacy',
+  component: PrivacyPage,
 })
 
 // Configuration du routeur
-const routeTree = rootRoute.addChildren([indexRoute, dashboardRoute, authRoute, profileRoute])
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  authRoute,
+  dashboardRoute,
+  termsRoute,
+  privacyRoute,
+])
 
-export const router = createRouter({ routeTree })
+export const router = createRouter({ 
+  routeTree,
+  defaultPreload: 'intent',
+})
 
 // Types pour TypeScript
 declare module '@tanstack/react-router' {

@@ -33,9 +33,7 @@ export function Header() {
               className="h-8 w-8 transition-transform duration-300 group-hover:scale-110" 
             />
             <span
-              className={`text-2xl font-bold transition-all duration-300 group-hover:scale-105 ${
-                isScrolled ? 'text-occitan-red' : 'text-white drop-shadow-lg'
-              }`}
+              className={`text-2xl font-bold transition-all duration-300 group-hover:scale-105 text-black`}
               style={{ fontFamily: 'Solway, Montserrat, Archer, Arial, sans-serif' }}
             >
               Ankòccitan
@@ -44,19 +42,17 @@ export function Header() {
 
           {/* Navigation avec micro-interactions */}
           <nav className="flex items-center space-x-4">
+            {/* Boutons pour utilisateurs non connectés */}
             <Link
               to="/auth"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:scale-105 relative overflow-hidden ${
-                isScrolled 
-                  ? 'text-gray-700 hover:text-occitan-red' 
-                  : 'text-white/90 hover:text-white'
-              }`}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:scale-105 relative overflow-hidden text-black`}
             >
               <span className="relative z-10">Connexion</span>
               <div className="absolute inset-0 bg-occitan-orange/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </Link>
             <Link
               to="/auth"
+              search={{ mode: 'register' }}
               className="bg-occitan-red text-white hover:bg-occitan-orange px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg relative overflow-hidden group"
             >
               <span className="relative z-10">Créer un compte</span>
