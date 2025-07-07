@@ -1,0 +1,119 @@
+@font-face {
+  font-family: 'Solway';
+  src: url('/src/assets/fonts/Solway-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Animations personnalisées */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradient-x {
+  0%, 100% { 
+    background-position: 0% 50%; 
+  }
+  50% { 
+    background-position: 100% 50%; 
+  }
+}
+
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Classes d'animation */
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 3s ease infinite;
+}
+
+.animate-count-up {
+  animation: count-up 0.6s ease-out forwards;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+
+.animation-delay-700 {
+  animation-delay: 700ms;
+}
+
+/* Micro-interactions */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Palette de couleurs occitane */
+.text-occitan-red {
+  color: #D02F2F;
+}
+
+.text-occitan-orange {
+  color: #F37321;
+}
+
+.text-occitan-yellow {
+  color: #F5C33C;
+}
+
+.bg-occitan-red {
+  background-color: #D02F2F;
+}
+
+.bg-occitan-orange {
+  background-color: #F37321;
+}
+
+.bg-occitan-yellow {
+  background-color: #F5C33C;
+}
+
+.bg-occitan-cream {
+  background-color: #FEF8F2;
+}
+
+.bg-occitan-light {
+  background-color: #F9F9F9;
+}
+
+html, body, #root {
+  @apply min-h-screen w-full bg-gradient-to-br from-orange-50 to-red-50;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}

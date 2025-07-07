@@ -1,0 +1,94 @@
+# RCT: Initialiser un projet React TypeScript modulaire et scalable
+
+## Objectif :
+Créer une base de projet React TypeScript pour une **webapp collaborative et évolutive**, avec une **architecture modulaire feature-first** et une structure claire, facilement maintenable.
+
+## Contraintes techniques :
+- React + TypeScript
+- CSS : Tailwind CSS
+- Routing : TanStack Router
+- State management : Zustand
+- API : React Query avec fetch ou Axios
+- Linter & Format : ESLint + Prettier
+- Git hooks : Husky + Commitizen + Commitlint + Lint-staged
+- Tests :
+  - Unitaires et d’intégration avec Vitest (ou Jest) + React Testing Library
+  - E2E avec Cypress
+- Storybook pour la documentation des composants
+
+## Bonnes pratiques attendues :
+- Mise en place de tests unitaires et d’intégration dès l’initialisation du projet.
+- Structure modulaire feature-first :
+  - `src/features/` : chaque domaine fonctionnel (ex : decks, users, auth)
+  - `src/core/` ou `src/shared/` : éléments transversaux (contexts, styles globaux, helpers, API clients)
+  - `src/layouts/` : gestion des layouts applicatifs
+  - `src/router.tsx` : définition centralisée de la navigation avec TanStack Router
+- Convention de nommage claire et homogène
+- Organisation des hooks et stores par feature
+- Configuration complète des outils de qualité de code (ESLint, Prettier, Husky, Commitlint, Lint-staged)
+- Préparation des scripts npm pour les tests, les hooks Git, et les conventions de commit
+- Configuration de Storybook et création d'un premier story de composant de base
+
+## Attendu :
+- 📂 Arborescence du projet :
+
+src/
+├── assets/
+├── components/
+├── core/ (ou shared/)
+│     ├── api/
+│     ├── contexts/
+│     ├── hooks/
+│     └── utils/
+├── features/
+│     ├── auth/
+│     ├── decks/
+│     └── users/
+├── layouts/
+├── router.tsx
+├── App.tsx
+└── main.tsx
+public/
+.eslintrc.cjs
+.prettierrc
+.lintstagedrc
+commitlint.config.cjs
+vite.config.ts
+tsconfig.json
+package.json
+README.md
+
+- 📦 Dépendances installées et configurées :
+- React, TypeScript, Tailwind CSS
+- TanStack Router, Zustand, React Query, Axios
+- ESLint, Prettier, Husky, Lint-staged, Commitizen, Commitlint
+- Vitest (ou Jest), React Testing Library
+- Cypress
+- Storybook
+
+- ✅ Exemple de :
+- Routeur avec TanStack Router
+- Store Zustand
+- Appel API avec React Query + Axios ou fetch
+- Test unitaire et test d’intégration de base
+- Configuration Cypress pour E2E
+- Storybook avec un composant exemple
+
+- ⚙️ Fichiers de configuration :
+- ESLint
+- Prettier
+- Husky + Lint-staged + Commitlint
+- Storybook
+
+- 🖥️ Scripts npm disponibles :
+- `dev` : démarrer l'application
+- `lint` : lancer le linter
+- `format` : formatter le code
+- `test` : lancer les tests unitaires et d’intégration
+- `test:e2e` : lancer Cypress
+- `prepare` : installer les hooks Husky
+- `commit` : lancer Commitizen
+
+## Exigence supplémentaire :
+- Fournir l’ordre exact des commandes terminal à exécuter pour l’initialisation complète du projet.
+- Veiller à ce que l’arborescence et les fichiers générés soient directement opérationnels.
