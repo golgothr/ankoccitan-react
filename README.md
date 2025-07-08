@@ -39,7 +39,7 @@ src/
 - **PostCSS 8.5.6**
 
 ### Routing & State Management
-- **TanStack Router 1.125.4** (routing)
+- **React Router 6** (routing)
 - **Zustand 5.0.6** (state management)
 - **TanStack React Query 5.81.5** (server state)
 
@@ -286,7 +286,7 @@ import { apiClient } from '@core/api/apiClient';
 
 ### Documentation
 - [React 18](https://react.dev/)
-- [TanStack Router](https://tanstack.com/router)
+- [React Router 6](https://reactrouter.com/en/main)
 - [Zustand](https://zustand-demo.pmnd.rs/)
 - [TanStack Query](https://tanstack.com/query)
 - [Vite](https://vitejs.dev/)
