@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  username?: string;
-}
+import { supabase, User } from '@/core/lib/supabase';
 
 interface AuthState {
   isLoggedIn: boolean;
@@ -24,46 +18,55 @@ export function useAuth() {
     // Vérifier l'état d'authentification au chargement
     checkAuthStatus();
 
-    // Écouter les changements de localStorage
-    const handleStorageChange = () => {
-      checkAuthStatus();
-    };
+    // Écouter les changements d'authentification Supabase
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Récupérer le profil utilisateur
+          const { data: profile } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
 
-    window.addEventListener('storage', handleStorageChange);
+          setAuthState({
+            isLoggedIn: true,
+            user: profile,
+            token: session.access_token,
+          });
+        } else if (event === 'SIGNED_OUT') {
+          setAuthState({
+            isLoggedIn: false,
+            user: null,
+            token: null,
+          });
+        }
+      }
+    );
 
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
-  const checkAuthStatus = () => {
-    const token = localStorage.getItem('auth_token');
-    const userStr = localStorage.getItem('user');
+  const checkAuthStatus = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session?.user) {
+      // Récupérer le profil utilisateur
+      const { data: profile } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
 
-    if (token && userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        setAuthState({
-          isLoggedIn: true,
-          user,
-          token,
-        });
-      } catch (error) {
-        console.error('Erreur lors du parsing des données utilisateur:', error);
-        logout();
-      }
-    } else {
       setAuthState({
-        isLoggedIn: false,
-        user: null,
-        token: null,
+        isLoggedIn: true,
+        user: profile,
+        token: session.access_token,
       });
     }
   };
 
   const login = (userData: { user: User; token: string }) => {
-    localStorage.setItem('auth_token', userData.token);
-    localStorage.setItem('user', JSON.stringify(userData.user));
     setAuthState({
       isLoggedIn: true,
       user: userData.user,
@@ -71,9 +74,8 @@ export function useAuth() {
     });
   };
 
-  const logout = () => {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user');
+  const logout = async () => {
+    await supabase.auth.signOut();
     setAuthState({
       isLoggedIn: false,
       user: null,
@@ -81,14 +83,21 @@ export function useAuth() {
     });
   };
 
-  const updateUser = (userData: Partial<User>) => {
+  const updateUser = async (userData: Partial<User>) => {
     if (authState.user) {
-      const updatedUser = { ...authState.user, ...userData };
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      setAuthState(prev => ({
-        ...prev,
-        user: updatedUser,
-      }));
+      const { data, error } = await supabase
+        .from('users')
+        .update(userData)
+        .eq('id', authState.user.id)
+        .select()
+        .single();
+
+      if (!error && data) {
+        setAuthState(prev => ({
+          ...prev,
+          user: data,
+        }));
+      }
     }
   };
 

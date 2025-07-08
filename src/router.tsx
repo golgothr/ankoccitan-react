@@ -4,6 +4,7 @@ import { AuthPage } from '@/features/auth/AuthPage'
 import { DashboardPage } from '@/features/dashboard/DashboardPage'
 import { TermsPage } from '@/features/legal/TermsPage'
 import { PrivacyPage } from '@/features/legal/PrivacyPage'
+import { ProtectedRoute } from '@/core/components/ProtectedRoute'
 
 // Route racine simplifiée
 const rootRoute = createRootRoute({
@@ -27,11 +28,15 @@ const authRoute = createRoute({
   component: AuthPage,
 })
 
-// Route dashboard simplifiée (sans protection pour le moment)
+// Route dashboard protégée
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/dashboard',
-  component: DashboardPage,
+  component: () => (
+    <ProtectedRoute>
+      <DashboardPage />
+    </ProtectedRoute>
+  ),
 })
 
 // Routes légales

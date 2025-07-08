@@ -1,7 +1,40 @@
-import { Link } from '@tanstack/react-router'
-import logo from '@/assets/logo.png'
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearch } from '@tanstack/react-router';
+import { LoginForm } from './components/LoginForm';
+import { RegisterForm } from './components/RegisterForm';
+import logo from '@/assets/logo.png';
+
+// Types pour les paramètres de recherche
+interface AuthSearchParams {
+  mode?: 'login' | 'register';
+  redirect?: string;
+}
 
 export function AuthPage() {
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const navigate = useNavigate();
+  const search = useSearch({ from: '/auth' }) as AuthSearchParams;
+
+  // Déterminer le mode initial depuis l'URL
+  useEffect(() => {
+    if (search.mode === 'register') {
+      setMode('register');
+    } else {
+      setMode('login');
+    }
+  }, [search.mode]);
+
+  const handleAuthSuccess = () => {
+    // Rediriger vers la page demandée ou le dashboard par défaut
+    const redirectPath = search.redirect || '/dashboard';
+    navigate({ to: redirectPath as any });
+  };
+
+  const handleAuthError = (error: string) => {
+    console.error('Erreur d\'authentification:', error);
+    // Ici on pourrait afficher une notification d'erreur
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-orange-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
@@ -15,67 +48,77 @@ export function AuthPage() {
             />
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Authentification
+            {mode === 'login' ? 'Connexion' : 'Créer un compte'}
           </h2>
           <p className="text-gray-600">
-            L'authentification sera bientôt disponible avec Supabase
+            {mode === 'login' 
+              ? 'Connectez-vous à votre compte Ankòccitan' 
+              : 'Rejoignez la communauté Ankòccitan'
+            }
           </p>
         </div>
 
-        {/* Message informatif */}
-        <div className="bg-white rounded-xl shadow-xl p-8 border border-gray-100 text-center">
-          <div className="mb-6">
-            <svg className="mx-auto h-12 w-12 text-occitan-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-          </div>
-          
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Fonctionnalité en cours de développement
-          </h3>
-          
-          <p className="text-gray-600 mb-6">
-            Nous travaillons actuellement sur l'intégration de Supabase pour l'authentification. 
-            Cette fonctionnalité sera bientôt disponible !
-          </p>
-          
-          <div className="space-y-4">
-            <Link
-              to="/dashboard"
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-occitan-red to-occitan-orange hover:from-occitan-orange hover:to-occitan-red focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange transition-all duration-200"
+        {/* Toggle entre connexion et inscription */}
+        <div className="bg-white rounded-lg p-1 shadow-sm">
+          <div className="flex">
+            <button
+              onClick={() => setMode('login')}
+              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 ${
+                mode === 'login'
+                  ? 'bg-gradient-to-r from-occitan-red to-occitan-orange text-white shadow-md'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
             >
-              Voir le Dashboard (Démo)
-            </Link>
-            
-            <Link
-              to="/"
-              className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange transition-all duration-200"
+              Connexion
+            </button>
+            <button
+              onClick={() => setMode('register')}
+              className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all duration-200 ${
+                mode === 'register'
+                  ? 'bg-gradient-to-r from-occitan-red to-occitan-orange text-white shadow-md'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
             >
-              Retour à l'accueil
-            </Link>
+              Inscription
+            </button>
           </div>
+        </div>
+
+        {/* Formulaire */}
+        <div className="bg-white rounded-xl shadow-xl p-8 border border-gray-100">
+          {mode === 'login' ? (
+            <LoginForm 
+              onSuccess={handleAuthSuccess}
+              onError={handleAuthError}
+            />
+          ) : (
+            <RegisterForm 
+              onSuccess={handleAuthSuccess}
+              onError={handleAuthError}
+            />
+          )}
         </div>
 
         {/* Liens légaux */}
         <div className="text-center text-sm text-gray-500">
           <p>
             En continuant, vous acceptez nos{' '}
-            <Link 
-              to="/terms" 
+            <a 
+              href="/terms" 
               className="text-occitan-red hover:text-occitan-orange underline transition-colors duration-200"
             >
               conditions d'utilisation
-            </Link>{' '}
+            </a>{' '}
             et notre{' '}
-            <Link 
-              to="/privacy" 
+            <a 
+              href="/privacy" 
               className="text-occitan-red hover:text-occitan-orange underline transition-colors duration-200"
             >
               politique de confidentialité
-            </Link>
+            </a>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 } 
