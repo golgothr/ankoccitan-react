@@ -1,5 +1,5 @@
 import { FaRocket } from 'react-icons/fa';
-import { Link } from '@tanstack/react-router';
+import { Link } from 'react-router-dom';
 
 export function HeroSection() {
   return (
@@ -55,8 +55,7 @@ export function HeroSection() {
           
           {/* Bouton principal */}
           <Link
-            to="/auth"
-            search={{ mode: 'register' }}
+            to="/auth?mode=register"
             className="inline-flex items-center bg-gradient-to-r from-orange-400 to-red-500 hover:from-red-500 hover:to-orange-400 text-white font-semibold px-8 py-4 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-2xl transform"
           >
             <FaRocket className="mr-2" />

@@ -1,8 +1,8 @@
-import { Outlet, Link, useRouter } from '@tanstack/react-router'
+import { Outlet, Link, useLocation } from 'react-router-dom'
 
 export function RootLayout() {
-  const router = useRouter();
-  const isHome = router.state.location.pathname === '/';
+  const location = useLocation();
+  const isHome = location.pathname === '/';
 
   return (
     <div className="min-h-screen">

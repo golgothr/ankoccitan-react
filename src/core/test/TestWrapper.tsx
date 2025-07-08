@@ -1,8 +1,7 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { RouterProvider } from '@tanstack/react-router';
-import { router } from '../../router';
+import { BrowserRouter } from 'react-router-dom';
 
 // Configuration du QueryClient pour les tests
 const createTestQueryClient = () =>
@@ -18,9 +17,9 @@ const createTestQueryClient = () =>
     },
   });
 
-// Router pour les tests
+// Router pour les tests - React Router v6
 const createTestRouter = () => {
-  return router;
+  return null; // React Router v6 n'a pas besoin de router instance
 };
 
 // Interface pour les options de test
@@ -57,8 +56,11 @@ const TestWrapper: React.FC<TestWrapperProps> = ({ children, options = {} }) => 
   const withRouterWrapper = (children: React.ReactNode) => {
     if (!withRouter) return children;
 
-    const router = createTestRouter();
-    return <RouterProvider router={router} />;
+    return (
+      <BrowserRouter>
+        {children}
+      </BrowserRouter>
+    );
   };
 
   return withRouterWrapper(withQueryClientWrapper(children));

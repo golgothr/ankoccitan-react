@@ -55,6 +55,16 @@ export const loginUser = async (credentials: LoginCredentials): Promise<AuthApiR
  * Enregistre un nouvel utilisateur
  */
 export const registerUser = async (userData: RegisterData): Promise<AuthApiResponse> => {
+  console.log('Tentative d\'inscription avec:', { email: userData.email, username: userData.username });
+  
+  // Vérifier la configuration Supabase
+  console.log('URL Supabase:', import.meta.env.VITE_SUPABASE_URL);
+  console.log('Clé Supabase présente:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+  
+  if (!supabase.auth) {
+    throw new Error('Configuration Supabase manquante. Vérifiez vos variables d\'environnement.');
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email: userData.email,
     password: userData.password,
@@ -67,22 +77,40 @@ export const registerUser = async (userData: RegisterData): Promise<AuthApiRespo
   });
 
   if (error) {
+    console.error('Erreur Supabase auth:', error);
     throw new Error(error.message);
   }
 
   if (!data.user) {
+    console.error('Pas d\'utilisateur retourné par Supabase');
     throw new Error('Erreur lors de la création du compte');
   }
 
-  // Récupérer les données du profil utilisateur
-  const { data: profile, error: profileError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', data.user.id)
-    .single();
+  console.log('Utilisateur créé avec succès:', data.user.id);
 
-  if (profileError) {
-    throw new Error('Erreur lors de la récupération du profil');
+  // Retry pour récupérer le profil utilisateur (trigger Supabase peut être lent)
+  let profile = null;
+  let profileError = null;
+  for (let i = 0; i < 5; i++) {
+    console.log(`Tentative ${i + 1}/5 de récupération du profil...`);
+    const { data: p, error: e } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
+    if (p) {
+      profile = p;
+      console.log('Profil récupéré:', profile);
+      break;
+    }
+    profileError = e;
+    console.log(`Erreur profil ${i + 1}:`, e);
+    await new Promise((res) => setTimeout(res, 500));
+  }
+  
+  if (!profile) {
+    console.error('Impossible de récupérer le profil après 5 tentatives');
+    throw new Error('Profil utilisateur non disponible après création. Veuillez réessayer.');
   }
 
   return {

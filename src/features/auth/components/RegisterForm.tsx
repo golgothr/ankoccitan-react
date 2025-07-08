@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { registerUser, RegisterData } from '../../../core/api/authApi';
 import { useAuth } from '@/core/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -36,19 +37,22 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError }
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   // Mutation pour l'inscription
   const registerMutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      // Utiliser le hook centralisé pour la connexion
+      console.log('[RegisterForm] Inscription réussie', data);
       login(data);
-      
       setErrors({});
       setIsSubmitting(false);
+      console.log('[RegisterForm] Redirection vers /dashboard');
+      navigate('/dashboard');
       onSuccess?.();
     },
     onError: (error: Error) => {
+      console.error('[RegisterForm] Erreur d\'inscription', error);
       setErrors({ general: error.message });
       setIsSubmitting(false);
       onError?.(error.message);
@@ -137,12 +141,27 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError }
     // Préparer les données pour l'API
     const userData: RegisterData = {
       name: formData.name,
+      username: formData.username,
       email: formData.email,
       password: formData.password,
     };
 
-    // Soumettre le formulaire
-    registerMutation.mutate(userData);
+    // Timeout de sécurité (30 secondes)
+    const timeoutId = setTimeout(() => {
+      if (isSubmitting) {
+        setErrors({ general: 'Délai d\'attente dépassé. Vérifiez votre connexion.' });
+        setIsSubmitting(false);
+      }
+    }, 30000);
+
+    try {
+      // Soumettre le formulaire
+      registerMutation.mutate(userData);
+    } catch (error) {
+      clearTimeout(timeoutId);
+      setErrors({ general: 'Erreur lors de la soumission du formulaire.' });
+      setIsSubmitting(false);
+    }
   };
 
   return (

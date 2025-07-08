@@ -30,6 +30,7 @@ END;
 $$ language 'plpgsql';
 
 -- Trigger pour mettre à jour updated_at automatiquement
+DROP TRIGGER IF EXISTS update_users_updated_at ON public.users;
 CREATE TRIGGER update_users_updated_at 
     BEFORE UPDATE ON public.users 
     FOR EACH ROW 
@@ -51,6 +52,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Trigger pour créer automatiquement un profil utilisateur
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
@@ -59,17 +61,21 @@ CREATE TRIGGER on_auth_user_created
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
 -- Politique : les utilisateurs peuvent voir leur propre profil
+DROP POLICY IF EXISTS "Users can view own profile" ON public.users;
 CREATE POLICY "Users can view own profile" ON public.users
     FOR SELECT USING (auth.uid() = id);
 
 -- Politique : les utilisateurs peuvent mettre à jour leur propre profil
+DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
 CREATE POLICY "Users can update own profile" ON public.users
     FOR UPDATE USING (auth.uid() = id);
 
 -- Politique : les utilisateurs peuvent insérer leur propre profil (via trigger)
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.users;
 CREATE POLICY "Users can insert own profile" ON public.users
     FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- Politique : les utilisateurs peuvent supprimer leur propre profil
+DROP POLICY IF EXISTS "Users can delete own profile" ON public.users;
 CREATE POLICY "Users can delete own profile" ON public.users
     FOR DELETE USING (auth.uid() = id); 

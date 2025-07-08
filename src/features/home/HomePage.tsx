@@ -4,6 +4,7 @@ import { FeaturesSection } from './components/FeaturesSection';
 import { WhyAnkiSection } from './components/WhyAnkiSection';
 import { OccitanPromotionSection } from './components/OccitanPromotionSection';
 import { Footer } from './components/Footer';
+import { SupabaseTest } from '@/components/SupabaseTest';
 
 export function HomePage() {
   return (
@@ -14,6 +15,10 @@ export function HomePage() {
         <FeaturesSection />
         <WhyAnkiSection />
         <OccitanPromotionSection />
+        {/* Test de configuration - à retirer en production */}
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <SupabaseTest />
+        </div>
       </main>
       <Footer />
     </div>

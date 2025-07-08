@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearch } from '@tanstack/react-router';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { LoginForm } from './components/LoginForm';
 import { RegisterForm } from './components/RegisterForm';
 import logo from '@/assets/logo.png';
@@ -13,21 +13,38 @@ interface AuthSearchParams {
 export function AuthPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const navigate = useNavigate();
-  const search = useSearch({ from: '/auth' }) as AuthSearchParams;
+  const location = useLocation();
+  // Lecture des query params
+  const params = new URLSearchParams(location.search);
+  const modeParam = params.get('mode');
+  const redirectParam = params.get('redirect');
 
   // Déterminer le mode initial depuis l'URL
   useEffect(() => {
-    if (search.mode === 'register') {
+    if (modeParam === 'register') {
       setMode('register');
     } else {
       setMode('login');
     }
-  }, [search.mode]);
+  }, [modeParam]);
 
   const handleAuthSuccess = () => {
-    // Rediriger vers la page demandée ou le dashboard par défaut
-    const redirectPath = search.redirect || '/dashboard';
-    navigate({ to: redirectPath as any });
+    const fallback = '/dashboard';
+    const redirectTo = typeof redirectParam === 'string' && redirectParam.startsWith('/')
+      ? redirectParam
+      : fallback;
+    if (redirectTo === '/auth' || redirectTo === '/login' || redirectTo === '/404') {
+      console.log('[AuthPage] Redirection protégée vers /dashboard');
+      navigate(fallback);
+      return;
+    }
+    try {
+      console.log('[AuthPage] Redirection vers', redirectTo);
+      navigate(redirectTo);
+    } catch (err) {
+      console.error('[AuthPage] Redirection échouée', err);
+      navigate(fallback);
+    }
   };
 
   const handleAuthError = (error: string) => {
@@ -117,6 +134,13 @@ export function AuthPage() {
               politique de confidentialité
             </a>
           </p>
+        </div>
+
+        {/* Bouton retour accueil */}
+        <div className="text-center mt-6">
+          <Link to="/" className="inline-block px-4 py-2 bg-gray-200 rounded hover:bg-orange-100 text-occitan-red font-semibold transition-colors">
+            Retour à l'accueil
+          </Link>
         </div>
       </div>
     </div>

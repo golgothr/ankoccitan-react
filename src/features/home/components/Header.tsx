@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router';
+import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import logo from '@/assets/logo.png';
 
@@ -51,8 +51,7 @@ export function Header() {
               <div className="absolute inset-0 bg-occitan-orange/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </Link>
             <Link
-              to="/auth"
-              search={{ mode: 'register' }}
+              to="/auth?mode=register"
               className="bg-occitan-red text-white hover:bg-occitan-orange px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg relative overflow-hidden group"
             >
               <span className="relative z-10">Créer un compte</span>

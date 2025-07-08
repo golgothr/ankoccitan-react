@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { loginUser, LoginCredentials } from '../../../core/api/authApi';
 import { useAuth } from '@/core/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -27,19 +28,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   // Mutation pour la connexion
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      // Utiliser le hook centralisé pour la connexion
+      console.log('[LoginForm] Connexion réussie', data);
       login(data);
-      
       setErrors({});
       setIsSubmitting(false);
+      console.log('[LoginForm] Redirection vers /dashboard');
+      navigate('/dashboard');
       onSuccess?.();
     },
     onError: (error: Error) => {
+      console.error('[LoginForm] Erreur de connexion', error);
       setErrors({ general: error.message });
       setIsSubmitting(false);
       onError?.(error.message);

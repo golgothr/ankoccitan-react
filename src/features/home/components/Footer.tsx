@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router';
+import { Link } from 'react-router-dom';
 import { FaBookOpen, FaEnvelope, FaGithub, FaTwitter, FaHeart } from 'react-icons/fa';
 
 export function Footer() {
