@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { useAuth } from '@/core/hooks/useAuth';
 import logo from '@/assets/logo.png';
 
 interface DashboardHeaderProps {
   onMenuToggle: () => void;
-  sidebarOpen: boolean;
 }
 
-export function DashboardHeader({ onMenuToggle, sidebarOpen }: DashboardHeaderProps) {
+export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
@@ -16,10 +16,10 @@ export function DashboardHeader({ onMenuToggle, sidebarOpen }: DashboardHeaderPr
     console.log('Recherche:', searchQuery);
   };
 
-  const handleLogout = () => {
-    // TODO: Implémenter la déconnexion
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user');
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
     window.location.href = '/';
   };
 
@@ -34,17 +34,27 @@ export function DashboardHeader({ onMenuToggle, sidebarOpen }: DashboardHeaderPr
             className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-occitan-orange"
             aria-label="Ouvrir le menu"
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
 
           {/* Logo */}
           <Link to="/dashboard" className="flex items-center space-x-2 group">
-            <img 
-              src={logo} 
-              alt="Logo Ankòccitan" 
-              className="h-8 w-8 transition-transform duration-300 group-hover:scale-110" 
+            <img
+              src={logo}
+              alt="Logo Ankòccitan"
+              className="h-8 w-8 transition-transform duration-300 group-hover:scale-110"
             />
             <span className="text-xl font-bold text-gray-900 hidden sm:block">
               Ankòccitan
@@ -57,8 +67,18 @@ export function DashboardHeader({ onMenuToggle, sidebarOpen }: DashboardHeaderPr
           <form onSubmit={handleSearch} className="relative">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
               <input
@@ -79,8 +99,18 @@ export function DashboardHeader({ onMenuToggle, sidebarOpen }: DashboardHeaderPr
             className="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-occitan-orange"
             aria-label="Rechercher"
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </button>
 
@@ -89,8 +119,18 @@ export function DashboardHeader({ onMenuToggle, sidebarOpen }: DashboardHeaderPr
             className="relative p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-occitan-orange"
             aria-label="Notifications"
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.5 3.75a6 6 0 00-6 6v3.75a6 6 0 006 6h3a6 6 0 006-6V9.75a6 6 0 00-6-6h-3z" />
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 17h5l-5 5v-5zM10.5 3.75a6 6 0 00-6 6v3.75a6 6 0 006 6h3a6 6 0 006-6V9.75a6 6 0 00-6-6h-3z"
+              />
             </svg>
             {/* Badge de notification */}
             <span className="absolute top-1 right-1 h-2 w-2 bg-occitan-red rounded-full animate-pulse"></span>
@@ -108,8 +148,18 @@ export function DashboardHeader({ onMenuToggle, sidebarOpen }: DashboardHeaderPr
               <span className="hidden sm:block text-sm font-medium text-gray-700">
                 Utilisateur
               </span>
-              <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <svg
+                className="h-4 w-4 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
@@ -121,9 +171,7 @@ export function DashboardHeader({ onMenuToggle, sidebarOpen }: DashboardHeaderPr
               >
                 Mon profil
               </Link>
-              <button
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-              >
+              <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
                 Paramètres
               </button>
               <hr className="my-1" />
@@ -139,4 +187,4 @@ export function DashboardHeader({ onMenuToggle, sidebarOpen }: DashboardHeaderPr
       </div>
     </header>
   );
-} 
+}

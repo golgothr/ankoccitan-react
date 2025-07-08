@@ -1,7 +1,7 @@
-import { useAuthStore } from '@/features/auth/authStore'
+import { useAuth } from '@/core/hooks/useAuth';
 
 export function UserProfilePage() {
-  const { user, logout } = useAuthStore()
+  const { user, logout } = useAuth();
 
   if (!user) {
     return (
@@ -13,7 +13,7 @@ export function UserProfilePage() {
           Veuillez vous connecter pour accéder à votre profil.
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -23,7 +23,7 @@ export function UserProfilePage() {
           <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
             Profil Utilisateur
           </h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -31,14 +31,14 @@ export function UserProfilePage() {
               </label>
               <p className="mt-1 text-sm text-gray-900">{user.name}</p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Email
               </label>
               <p className="mt-1 text-sm text-gray-900">{user.email}</p>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 ID Utilisateur
@@ -46,7 +46,7 @@ export function UserProfilePage() {
               <p className="mt-1 text-sm text-gray-900">{user.id}</p>
             </div>
           </div>
-          
+
           <div className="mt-6">
             <button
               onClick={logout}
@@ -58,5 +58,5 @@ export function UserProfilePage() {
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

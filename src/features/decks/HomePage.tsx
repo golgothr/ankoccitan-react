@@ -1,21 +1,27 @@
-import { useQuery } from '@tanstack/react-query'
-import { useAuthStore } from '@/features/auth/authStore'
-import { fetchDecks } from '@/core/api/decksApi'
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/core/hooks/useAuth';
+import { fetchDecks } from '@/core/api/decksApi';
 
 export function DashboardPage() {
-  const { user } = useAuthStore()
-  
-  const { data: decks, isLoading, error } = useQuery({
+  const { user } = useAuth();
+
+  const {
+    data: decks,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['decks'],
     queryFn: fetchDecks,
-  })
+  });
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div data-testid="loading" className="text-lg text-gray-600">Chargement...</div>
+        <div data-testid="loading" className="text-lg text-gray-600">
+          Chargement...
+        </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -28,7 +34,7 @@ export function DashboardPage() {
           Impossible de charger les decks. Veuillez réessayer.
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -65,5 +71,5 @@ export function DashboardPage() {
         ))}
       </div>
     </div>
-  )
-} 
+  );
+}
