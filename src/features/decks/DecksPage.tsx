@@ -4,14 +4,17 @@ import { useDecks } from './hooks/useDecks';
 import { DeckFilters } from './components/DeckFilters';
 import { DeckStats } from './components/DeckStats';
 import { DeckGrid } from './components/DeckGrid';
-import { Deck } from './types/deck.types';
+import { CreateDeckModal, CreateDeckData } from './components/CreateDeckModal';
+import { Deck, DeckCategory } from './types/deck.types';
 
 export function DecksPage() {
   const navigate = useNavigate();
-  const { decks, stats, filters, updateFilters, deleteDeck } = useDecks();
+  const { decks, stats, filters, updateFilters, deleteDeck, addDeck } =
+    useDecks();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
     null
   );
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const handleEdit = (deck: Deck) => {
     // TODO: Naviguer vers la page d'édition
@@ -35,7 +38,41 @@ export function DecksPage() {
   };
 
   const handleCreateDeck = () => {
-    navigate('/decks/create');
+    setShowCreateModal(true);
+  };
+
+  const handleCreateDeckSubmit = async (deckData: CreateDeckData) => {
+    try {
+      // Mapper la catégorie du formulaire vers le type DeckCategory
+      const categoryMap: Record<string, DeckCategory> = {
+        Grammaire: 'grammar',
+        Vocabulaire: 'vocabulary',
+        Conjugaison: 'conjugation',
+        Prononciation: 'vocabulary', // Fallback
+        Culture: 'culture',
+        Histoire: 'culture',
+        Géographie: 'culture',
+        Littérature: 'culture',
+        Autre: 'vocabulary',
+      };
+
+      const newDeck = {
+        name: deckData.name,
+        description: deckData.description,
+        category: categoryMap[deckData.category] || 'vocabulary',
+        tags: deckData.tags,
+        isPublic: deckData.isPublic,
+        cardCount: 0,
+        userId: 'current-user', // Sera remplacé par l'ID réel de l'utilisateur connecté
+      };
+
+      // Créer le deck dans Supabase
+      await addDeck(newDeck);
+      console.log('Deck créé avec succès dans Supabase');
+    } catch (error) {
+      console.error('Erreur lors de la création du deck:', error);
+      // TODO: Afficher une notification d'erreur à l'utilisateur
+    }
   };
 
   return (
@@ -135,6 +172,13 @@ export function DecksPage() {
             </div>
           </div>
         )}
+
+        {/* Modal de création de deck */}
+        <CreateDeckModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSubmit={handleCreateDeckSubmit}
+        />
       </div>
     </div>
   );

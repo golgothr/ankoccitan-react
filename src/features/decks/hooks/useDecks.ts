@@ -1,10 +1,17 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Deck, DeckFilters } from '../types/deck.types';
 import {
   filterDecks,
   sortDecks,
   calculateDeckStats,
 } from '../utils/deckFilters';
+import {
+  fetchUserDecks,
+  createDeck as createDeckApi,
+  updateDeck as updateDeckApi,
+  deleteDeck as deleteDeckApi,
+} from '../../../core/api/supabaseDecksApi';
+import type { DeckRow } from '../../../core/lib/supabase';
 
 // Données mockées pour les tests
 const MOCK_DECKS: Deck[] = [
@@ -67,13 +74,51 @@ export function useDecks() {
     sortOrder: 'desc',
   });
 
-  const [decks, setDecks] = useState<Deck[]>(MOCK_DECKS);
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Filtrer et trier les decks
   const filteredAndSortedDecks = useMemo(() => {
     const filtered = filterDecks(decks, filters);
     return sortDecks(filtered, filters.sortBy, filters.sortOrder);
   }, [decks, filters]);
+
+  // Fonction pour convertir DeckRow en Deck
+  const convertDeckRowToDeck = (deckRow: DeckRow): Deck => ({
+    id: deckRow.id,
+    name: deckRow.name,
+    description: deckRow.description,
+    category: deckRow.category,
+    tags: deckRow.tags,
+    isPublic: deckRow.is_public,
+    cardCount: deckRow.card_count,
+    createdAt: new Date(deckRow.created_at),
+    lastModified: new Date(deckRow.updated_at),
+    userId: deckRow.user_id,
+  });
+
+  // Charger les decks depuis Supabase
+  useEffect(() => {
+    const loadDecks = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const deckRows = await fetchUserDecks();
+        const convertedDecks = deckRows.map(convertDeckRowToDeck);
+        setDecks(convertedDecks);
+      } catch (err) {
+        console.error('Erreur lors du chargement des decks:', err);
+        setError(err instanceof Error ? err.message : 'Erreur inconnue');
+        // Fallback vers les données mockées en cas d'erreur
+        setDecks(MOCK_DECKS);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDecks();
+  }, []);
 
   // Calculer les statistiques
   const stats = useMemo(() => {
@@ -85,34 +130,67 @@ export function useDecks() {
     setFilters((prev) => ({ ...prev, ...newFilters }));
   };
 
-  const addDeck = (deck: Omit<Deck, 'id' | 'createdAt' | 'lastModified'>) => {
-    const newDeck: Deck = {
-      ...deck,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-      lastModified: new Date(),
-    };
-    setDecks((prev) => [newDeck, ...prev]);
+  const addDeck = async (
+    deck: Omit<Deck, 'id' | 'createdAt' | 'lastModified'>
+  ) => {
+    try {
+      const deckData = {
+        name: deck.name,
+        description: deck.description,
+        category: deck.category,
+        tags: deck.tags,
+        is_public: deck.isPublic,
+      };
+
+      const newDeckRow = await createDeckApi(deckData);
+      const newDeck = convertDeckRowToDeck(newDeckRow);
+      setDecks((prev) => [newDeck, ...prev]);
+    } catch (err) {
+      console.error('Erreur lors de la création du deck:', err);
+      throw err;
+    }
   };
 
-  const updateDeck = (id: string, updates: Partial<Deck>) => {
-    setDecks((prev) =>
-      prev.map((deck) =>
-        deck.id === id
-          ? { ...deck, ...updates, lastModified: new Date() }
-          : deck
-      )
-    );
+  const updateDeck = async (id: string, updates: Partial<Deck>) => {
+    try {
+      const updateData: Record<string, unknown> = {};
+      if (updates.name) updateData.name = updates.name;
+      if (updates.description) updateData.description = updates.description;
+      if (updates.category) updateData.category = updates.category;
+      if (updates.tags) updateData.tags = updates.tags;
+      if (updates.isPublic !== undefined)
+        updateData.is_public = updates.isPublic;
+
+      await updateDeckApi(id, updateData);
+      setDecks((prev) =>
+        prev.map((deck) =>
+          deck.id === id
+            ? { ...deck, ...updates, lastModified: new Date() }
+            : deck
+        )
+      );
+    } catch (err) {
+      console.error('Erreur lors de la mise à jour du deck:', err);
+      throw err;
+    }
   };
 
-  const deleteDeck = (id: string) => {
-    setDecks((prev) => prev.filter((deck) => deck.id !== id));
+  const deleteDeck = async (id: string) => {
+    try {
+      await deleteDeckApi(id);
+      setDecks((prev) => prev.filter((deck) => deck.id !== id));
+    } catch (err) {
+      console.error('Erreur lors de la suppression du deck:', err);
+      throw err;
+    }
   };
 
   return {
     decks: filteredAndSortedDecks,
     stats,
     filters,
+    loading,
+    error,
     updateFilters,
     addDeck,
     updateDeck,

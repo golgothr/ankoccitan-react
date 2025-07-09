@@ -56,6 +56,7 @@ src/
 ### API & HTTP
 
 - **Axios 1.10.0** (client HTTP)
+- **Supabase 2.50.3** (backend-as-a-service)
 
 ### Testing
 
@@ -88,10 +89,11 @@ src/
 
 ### 🔐 Authentification
 
-- **Inscription/Connexion** avec Supabase
+- **Inscription/Connexion** avec Supabase Auth
 - **Gestion des sessions** avec React Context
 - **Protection des routes** automatique
 - **Redirection intelligente** après authentification
+- **Sécurité RLS** (Row Level Security) pour les données
 
 ### 📊 Dashboard
 
@@ -121,10 +123,11 @@ src/
 
 #### 🔧 Hook personnalisé `useDecks`
 
-- **Gestion de l'état** avec données mockées
+- **Gestion de l'état** avec Supabase
 - **Actions** : ajouter, modifier, supprimer, dupliquer
 - **Filtres** : recherche, catégories, tags, tri
 - **Statistiques** : calcul automatique des métriques
+- **Synchronisation temps réel** avec la base de données
 
 ### 📄 Pages Légales
 

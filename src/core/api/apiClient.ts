@@ -1,7 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 // Configuration de base
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 // Création de l'instance Axios
 export const apiClient: AxiosInstance = axios.create({
@@ -53,7 +54,7 @@ apiClient.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${token}`;
           return apiClient(originalRequest);
         }
-      } catch (refreshError) {
+      } catch {
         // Si le refresh échoue, déconnecter l'utilisateur
         localStorage.removeItem('auth_token');
         localStorage.removeItem('refresh_token');
@@ -66,7 +67,7 @@ apiClient.interceptors.response.use(
 );
 
 // Types utilitaires
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   message?: string;
   success: boolean;
@@ -85,14 +86,23 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 export const apiGet = <T>(url: string, config?: AxiosRequestConfig) =>
   apiClient.get<T>(url, config);
 
-export const apiPost = <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
-  apiClient.post<T>(url, data, config);
+export const apiPost = <T>(
+  url: string,
+  data?: unknown,
+  config?: AxiosRequestConfig
+) => apiClient.post<T>(url, data, config);
 
-export const apiPut = <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
-  apiClient.put<T>(url, data, config);
+export const apiPut = <T>(
+  url: string,
+  data?: unknown,
+  config?: AxiosRequestConfig
+) => apiClient.put<T>(url, data, config);
 
 export const apiDelete = <T>(url: string, config?: AxiosRequestConfig) =>
   apiClient.delete<T>(url, config);
 
-export const apiPatch = <T>(url: string, data?: any, config?: AxiosRequestConfig) =>
-  apiClient.patch<T>(url, data, config); 
+export const apiPatch = <T>(
+  url: string,
+  data?: unknown,
+  config?: AxiosRequestConfig
+) => apiClient.patch<T>(url, data, config);

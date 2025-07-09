@@ -9,7 +9,7 @@ vi.mock('../../../core/api/authApi', () => ({
   loginUser: vi.fn(),
 }));
 
-describe('LoginForm - Tests d\'intégration avancés', () => {
+describe("LoginForm - Tests d'intégration avancés", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
@@ -37,19 +37,18 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
       const onError = vi.fn();
 
       // Act
-      render(
-        <LoginForm onSuccess={onSuccess} onError={onError} />,
-        {
-          wrapperProps: {
-            withQueryClient: true,
-          },
-        }
-      );
+      render(<LoginForm onSuccess={onSuccess} onError={onError} />, {
+        wrapperProps: {
+          withQueryClient: true,
+        },
+      });
 
       // Remplir le formulaire
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, 'password123');
@@ -74,14 +73,20 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
       });
 
       // Vérifier que le token est stocké
-      expect(localStorage.setItem).toHaveBeenCalledWith('auth_token', 'mock-jwt-token');
-      expect(localStorage.setItem).toHaveBeenCalledWith('user', JSON.stringify(mockLoginResponse.user));
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'auth_token',
+        'mock-jwt-token'
+      );
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        'user',
+        JSON.stringify(mockLoginResponse.user)
+      );
     });
 
     it('devrait gérer les erreurs de connexion avec retry', async () => {
       // Arrange
       const { loginUser } = await import('../../../core/api/authApi');
-      
+
       // Premier appel échoue, deuxième réussit
       vi.mocked(loginUser)
         .mockRejectedValueOnce(mockApiError('Erreur réseau'))
@@ -93,18 +98,17 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
       const onError = vi.fn();
 
       // Act
-      render(
-        <LoginForm onError={onError} />,
-        {
-          wrapperProps: {
-            withQueryClient: true,
-          },
-        }
-      );
+      render(<LoginForm onError={onError} />, {
+        wrapperProps: {
+          withQueryClient: true,
+        },
+      });
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, 'password123');
@@ -128,7 +132,7 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
   });
 
   describe('Validation en temps réel', () => {
-    it('devrait valider l\'email en temps réel', async () => {
+    it("devrait valider l'email en temps réel", async () => {
       // Act
       render(<LoginForm />, {
         wrapperProps: {
@@ -144,7 +148,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
 
       // Assert
       await waitFor(() => {
-        expect(screen.getByText(/format d'email invalide/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/format d'email invalide/i)
+        ).toBeInTheDocument();
       });
 
       // Email valide
@@ -154,7 +160,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
 
       // Assert
       await waitFor(() => {
-        expect(screen.queryByText(/format d'email invalide/i)).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/format d'email invalide/i)
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -184,7 +192,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
 
       // Assert
       await waitFor(() => {
-        expect(screen.queryByText(/au moins 6 caractères/i)).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/au moins 6 caractères/i)
+        ).not.toBeInTheDocument();
       });
     });
   });
@@ -200,7 +210,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       // Navigation Tab
       emailInput.focus();
@@ -244,14 +256,25 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
       expect(form).toHaveAttribute('aria-label', 'Formulaire de connexion');
     });
 
-    it('devrait annoncer les changements d\'état aux lecteurs d\'écran', async () => {
+    it("devrait annoncer les changements d'état aux lecteurs d'écran", async () => {
       // Arrange
       const { loginUser } = await import('../../../core/api/authApi');
-      vi.mocked(loginUser).mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({ 
-          user: { id: '1', email: 'test@example.com', name: 'Test User' }, 
-          token: 'test' 
-        }), 1000))
+      vi.mocked(loginUser).mockImplementation(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(
+              () =>
+                resolve({
+                  user: {
+                    id: '1',
+                    email: 'test@example.com',
+                    name: 'Test User',
+                  },
+                  token: 'test',
+                }),
+              1000
+            )
+          )
       );
 
       // Act
@@ -263,7 +286,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, 'password123');
@@ -283,11 +308,22 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
     it('devrait empêcher les soumissions multiples', async () => {
       // Arrange
       const { loginUser } = await import('../../../core/api/authApi');
-      vi.mocked(loginUser).mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({ 
-          user: { id: '1', email: 'test@example.com', name: 'Test User' }, 
-          token: 'test' 
-        }), 2000))
+      vi.mocked(loginUser).mockImplementation(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(
+              () =>
+                resolve({
+                  user: {
+                    id: '1',
+                    email: 'test@example.com',
+                    name: 'Test User',
+                  },
+                  token: 'test',
+                }),
+              2000
+            )
+          )
       );
 
       // Act
@@ -299,7 +335,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, 'password123');
@@ -331,7 +369,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, 'password123');
@@ -350,7 +390,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
       const { loginUser } = await import('../../../core/api/authApi');
       const error = new Error('Unauthorized');
       error.name = 'AxiosError';
-      (error as any).response = { status: 401 };
+      (error as unknown as { response: { status: number } }).response = {
+        status: 401,
+      };
       vi.mocked(loginUser).mockRejectedValue(error);
 
       // Act
@@ -362,7 +404,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, 'password123');
@@ -379,7 +423,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
       const { loginUser } = await import('../../../core/api/authApi');
       const error = new Error('Internal Server Error');
       error.name = 'AxiosError';
-      (error as any).response = { status: 500 };
+      (error as unknown as { response: { status: number } }).response = {
+        status: 500,
+      };
       vi.mocked(loginUser).mockRejectedValue(error);
 
       // Act
@@ -391,7 +437,9 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, 'password123');
@@ -403,4 +451,4 @@ describe('LoginForm - Tests d\'intégration avancés', () => {
       });
     });
   });
-}); 
+});
