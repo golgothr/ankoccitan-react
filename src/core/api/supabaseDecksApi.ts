@@ -152,9 +152,9 @@ export async function duplicateDeck(deckId: string): Promise<DeckRow> {
   }
 
   const duplicatedDeck: DeckInsert = {
-    name: `${originalDeck.name} (copie)`,
-    description: originalDeck.description,
-    category: originalDeck.category,
+    title: `${originalDeck.title} (copie)`,
+    description: originalDeck.description || undefined,
+    difficulty_level: originalDeck.difficulty_level,
     tags: originalDeck.tags,
     is_public: false, // La copie est toujours privée
     user_id: user.id,
@@ -175,7 +175,7 @@ export async function fetchDeckStats() {
 
   const { data, error } = await supabase
     .from('decks')
-    .select('card_count, category, created_at')
+    .select('card_count, difficulty_level, created_at')
     .eq('user_id', user.id);
 
   if (error) {
@@ -186,14 +186,12 @@ export async function fetchDeckStats() {
   const stats = {
     totalDecks: data?.length || 0,
     totalCards: data?.reduce((sum, deck) => sum + deck.card_count, 0) || 0,
-    categoryDistribution: {
-      grammar: data?.filter((d) => d.category === 'grammar').length || 0,
-      conjugation:
-        data?.filter((d) => d.category === 'conjugation').length || 0,
-      vocabulary: data?.filter((d) => d.category === 'vocabulary').length || 0,
-      expressions:
-        data?.filter((d) => d.category === 'expressions').length || 0,
-      culture: data?.filter((d) => d.category === 'culture').length || 0,
+    difficultyDistribution: {
+      débutant:
+        data?.filter((d) => d.difficulty_level === 'débutant').length || 0,
+      intermédiaire:
+        data?.filter((d) => d.difficulty_level === 'intermédiaire').length || 0,
+      avancé: data?.filter((d) => d.difficulty_level === 'avancé').length || 0,
     },
     lastActivity:
       data?.length > 0
@@ -225,16 +223,16 @@ export async function searchDecks(
 
   let supabaseQuery = supabase.from('decks').select('*').eq('user_id', user.id);
 
-  // Recherche par nom ou description
+  // Recherche par titre ou description
   if (query) {
     supabaseQuery = supabaseQuery.or(
-      `name.ilike.%${query}%,description.ilike.%${query}%`
+      `title.ilike.%${query}%,description.ilike.%${query}%`
     );
   }
 
-  // Filtre par catégorie
+  // Filtre par niveau de difficulté
   if (filters.category && filters.category !== 'all') {
-    supabaseQuery = supabaseQuery.eq('category', filters.category);
+    supabaseQuery = supabaseQuery.eq('difficulty_level', filters.category);
   }
 
   // Filtre par visibilité

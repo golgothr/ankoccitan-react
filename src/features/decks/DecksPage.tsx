@@ -43,23 +43,17 @@ export function DecksPage() {
 
   const handleCreateDeckSubmit = async (deckData: CreateDeckData) => {
     try {
-      // Mapper la catégorie du formulaire vers le type DeckCategory
-      const categoryMap: Record<string, DeckCategory> = {
-        Grammaire: 'grammar',
-        Vocabulaire: 'vocabulary',
-        Conjugaison: 'conjugation',
-        Prononciation: 'vocabulary', // Fallback
-        Culture: 'culture',
-        Histoire: 'culture',
-        Géographie: 'culture',
-        Littérature: 'culture',
-        Autre: 'vocabulary',
+      // Mapper le niveau de difficulté vers le type DeckCategory
+      const difficultyMap: Record<string, DeckCategory> = {
+        débutant: 'vocabulary',
+        intermédiaire: 'grammar',
+        avancé: 'culture',
       };
 
       const newDeck = {
         name: deckData.name,
         description: deckData.description,
-        category: categoryMap[deckData.category] || 'vocabulary',
+        category: difficultyMap[deckData.difficultyLevel] || 'vocabulary',
         tags: deckData.tags,
         isPublic: deckData.isPublic,
         cardCount: 0,

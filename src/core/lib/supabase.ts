@@ -34,87 +34,74 @@ export interface AuthResponse {
 // Types pour les decks
 export interface DeckRow {
   id: string;
-  name: string;
-  description: string;
-  category:
-    | 'grammar'
-    | 'conjugation'
-    | 'vocabulary'
-    | 'expressions'
-    | 'culture';
-  tags: string[];
+  title: string;
+  description: string | null;
+  user_id: string;
   is_public: boolean;
+  language: string;
+  difficulty_level: 'débutant' | 'intermédiaire' | 'avancé';
   card_count: number;
+  tags: string[];
   created_at: string;
   updated_at: string;
-  user_id: string;
-  last_studied?: string;
-  study_count: number;
-  average_score: number;
 }
 
 export interface DeckInsert {
-  name: string;
-  description: string;
-  category:
-    | 'grammar'
-    | 'conjugation'
-    | 'vocabulary'
-    | 'expressions'
-    | 'culture';
-  tags: string[];
-  is_public: boolean;
+  title: string;
+  description?: string;
   user_id: string;
+  is_public?: boolean;
+  language?: string;
+  difficulty_level?: 'débutant' | 'intermédiaire' | 'avancé';
+  tags?: string[];
 }
 
 export interface DeckUpdate {
-  name?: string;
+  title?: string;
   description?: string;
-  category?:
-    | 'grammar'
-    | 'conjugation'
-    | 'vocabulary'
-    | 'expressions'
-    | 'culture';
-  tags?: string[];
   is_public?: boolean;
-  card_count?: number;
-  last_studied?: string;
-  study_count?: number;
-  average_score?: number;
+  language?: string;
+  difficulty_level?: 'débutant' | 'intermédiaire' | 'avancé';
+  tags?: string[];
 }
 
 // Types pour les cartes
 export interface CardRow {
   id: string;
   deck_id: string;
-  front: string;
-  back: string;
-  notes?: string;
+  card_type: 'revirada' | 'votz' | 'pexels' | 'manual';
+  front_content: string;
+  back_content: string;
+  pronunciation?: string;
+  audio_url?: string;
+  image_url?: string;
+  api_metadata?: Record<string, unknown>;
+  position: number;
   created_at: string;
   updated_at: string;
-  difficulty: number;
-  last_reviewed?: string;
-  review_count: number;
-  next_review?: string;
 }
 
 export interface CardInsert {
   deck_id: string;
-  front: string;
-  back: string;
-  notes?: string;
-  difficulty?: number;
+  card_type?: 'revirada' | 'votz' | 'pexels' | 'manual';
+  front_content: string;
+  back_content: string;
+  pronunciation?: string;
+  audio_url?: string;
+  image_url?: string;
+  api_metadata?: Record<string, unknown>;
+  position?: number;
 }
 
 export interface CardUpdate {
-  front?: string;
-  back?: string;
-  notes?: string;
-  difficulty?: number;
-  last_reviewed?: string;
-  review_count?: number;
-  next_review?: string;
+  card_type?: 'revirada' | 'votz' | 'pexels' | 'manual';
+  front_content?: string;
+  back_content?: string;
+  pronunciation?: string;
+  audio_url?: string;
+  image_url?: string;
+  api_metadata?: Record<string, unknown>;
+  position?: number;
 }
 
 // Types pour la base de données

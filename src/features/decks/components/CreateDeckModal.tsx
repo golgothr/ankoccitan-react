@@ -10,22 +10,12 @@ interface CreateDeckModalProps {
 export interface CreateDeckData {
   name: string;
   description: string;
-  category: string;
+  difficultyLevel: string;
   tags: string[];
   isPublic: boolean;
 }
 
-const CATEGORIES = [
-  'Grammaire',
-  'Vocabulaire',
-  'Conjugaison',
-  'Prononciation',
-  'Culture',
-  'Histoire',
-  'Géographie',
-  'Littérature',
-  'Autre',
-];
+const DIFFICULTY_LEVELS = ['débutant', 'intermédiaire', 'avancé'];
 
 export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
   isOpen,
@@ -35,7 +25,7 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
   const [formData, setFormData] = useState<CreateDeckData>({
     name: '',
     description: '',
-    category: '',
+    difficultyLevel: '',
     tags: [],
     isPublic: false,
   });
@@ -58,8 +48,8 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
         'La description doit contenir au moins 10 caractères';
     }
 
-    if (!formData.category) {
-      newErrors.category = 'Veuillez sélectionner une catégorie';
+    if (!formData.difficultyLevel) {
+      newErrors.category = 'Veuillez sélectionner un niveau de difficulté';
     }
 
     setErrors(newErrors);
@@ -79,7 +69,7 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
     setFormData({
       name: '',
       description: '',
-      category: '',
+      difficultyLevel: '',
       tags: [],
       isPublic: false,
     });
@@ -186,28 +176,31 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
             )}
           </div>
 
-          {/* Catégorie */}
+          {/* Niveau de difficulté */}
           <div>
             <label
-              htmlFor="category"
+              htmlFor="difficultyLevel"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Catégorie *
+              Niveau de difficulté *
             </label>
             <select
-              id="category"
-              value={formData.category}
+              id="difficultyLevel"
+              value={formData.difficultyLevel}
               onChange={(e) =>
-                setFormData((prev) => ({ ...prev, category: e.target.value }))
+                setFormData((prev) => ({
+                  ...prev,
+                  difficultyLevel: e.target.value,
+                }))
               }
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.category ? 'border-red-500' : 'border-gray-300'
               }`}
             >
-              <option value="">Sélectionnez une catégorie</option>
-              {CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {category}
+              <option value="">Sélectionnez un niveau</option>
+              {DIFFICULTY_LEVELS.map((level) => (
+                <option key={level} value={level}>
+                  {level}
                 </option>
               ))}
             </select>

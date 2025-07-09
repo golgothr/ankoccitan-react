@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Deck, DeckFilters } from '../types/deck.types';
+import { Deck, DeckFilters, DeckCategory } from '../types/deck.types';
 import {
   filterDecks,
   sortDecks,
@@ -87,9 +87,9 @@ export function useDecks() {
   // Fonction pour convertir DeckRow en Deck
   const convertDeckRowToDeck = (deckRow: DeckRow): Deck => ({
     id: deckRow.id,
-    name: deckRow.name,
-    description: deckRow.description,
-    category: deckRow.category,
+    name: deckRow.title,
+    description: deckRow.description || '',
+    category: deckRow.difficulty_level as DeckCategory,
     tags: deckRow.tags,
     isPublic: deckRow.is_public,
     cardCount: deckRow.card_count,
@@ -135,9 +135,12 @@ export function useDecks() {
   ) => {
     try {
       const deckData = {
-        name: deck.name,
+        title: deck.name,
         description: deck.description,
-        category: deck.category,
+        difficulty_level: deck.category as
+          | 'débutant'
+          | 'intermédiaire'
+          | 'avancé',
         tags: deck.tags,
         is_public: deck.isPublic,
       };
