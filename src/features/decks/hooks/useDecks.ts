@@ -13,6 +13,21 @@ import {
 } from '../../../core/api/supabaseDecksApi';
 import type { DeckRow } from '../../../core/lib/supabase';
 
+// Mappings pour convertir entre catégories et niveaux de difficulté
+const categoryToDifficultyMap: Record<DeckCategory, string> = {
+  vocabulary: 'débutant',
+  grammar: 'intermédiaire',
+  culture: 'avancé',
+  conjugation: 'intermédiaire',
+  expressions: 'avancé',
+};
+
+// const difficultyToCategoryMap: Record<string, DeckCategory> = {
+//   débutant: 'vocabulary',
+//   intermédiaire: 'grammar',
+//   avancé: 'culture',
+// };
+
 // Données mockées pour les tests
 const MOCK_DECKS: Deck[] = [
   {
@@ -137,10 +152,8 @@ export function useDecks() {
       const deckData = {
         title: deck.name,
         description: deck.description,
-        difficulty_level: deck.category as
-          | 'débutant'
-          | 'intermédiaire'
-          | 'avancé',
+        difficulty_level: (categoryToDifficultyMap[deck.category] ||
+          'débutant') as 'débutant' | 'intermédiaire' | 'avancé', // ✅ Utiliser le mapping avec fallback
         tags: deck.tags,
         is_public: deck.isPublic,
       };
@@ -157,9 +170,10 @@ export function useDecks() {
   const updateDeck = async (id: string, updates: Partial<Deck>) => {
     try {
       const updateData: Record<string, unknown> = {};
-      if (updates.name) updateData.name = updates.name;
+      if (updates.name) updateData.title = updates.name; // ✅ Correction: name -> title
       if (updates.description) updateData.description = updates.description;
-      if (updates.category) updateData.category = updates.category;
+      if (updates.category)
+        updateData.difficulty_level = categoryToDifficultyMap[updates.category]; // ✅ Correction: category -> difficulty_level
       if (updates.tags) updateData.tags = updates.tags;
       if (updates.isPublic !== undefined)
         updateData.is_public = updates.isPublic;

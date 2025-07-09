@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDecks } from './hooks/useDecks';
+import { useAuth } from '../../core/hooks/useAuth';
 import { DeckFilters } from './components/DeckFilters';
 import { DeckStats } from './components/DeckStats';
 import { DeckGrid } from './components/DeckGrid';
@@ -9,21 +10,49 @@ import { Deck, DeckCategory } from './types/deck.types';
 
 export function DecksPage() {
   const navigate = useNavigate();
-  const { decks, stats, filters, updateFilters, deleteDeck, addDeck } =
-    useDecks();
+  const { user } = useAuth(); // ✅ Récupérer l'utilisateur connecté
+  const {
+    decks,
+    stats,
+    filters,
+    loading,
+    error,
+    updateFilters,
+    deleteDeck,
+    addDeck,
+  } = useDecks();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
     null
   );
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   const handleEdit = (deck: Deck) => {
-    // TODO: Naviguer vers la page d'édition
+    // ✅ Naviguer vers la page d'édition (à implémenter plus tard)
     console.log('Éditer le deck:', deck.name);
+    // TODO: Naviguer vers /decks/:id/edit
+    // navigate(`/decks/${deck.id}/edit`);
   };
 
-  const handleDuplicate = (deck: Deck) => {
-    // TODO: Implémenter la duplication
-    console.log('Dupliquer le deck:', deck.name);
+  const handleDuplicate = async (deck: Deck) => {
+    try {
+      // ✅ Créer une copie du deck
+      const duplicatedDeck = {
+        name: `${deck.name} (copie)`,
+        description: deck.description,
+        category: deck.category,
+        tags: deck.tags,
+        isPublic: false, // Les copies sont privées par défaut
+        cardCount: 0, // Pas de cartes dans la copie
+        userId: user?.id || '',
+      };
+
+      await addDeck(duplicatedDeck);
+      console.log('Deck dupliqué avec succès');
+    } catch (error) {
+      console.error('Erreur lors de la duplication du deck:', error);
+      // L'erreur sera gérée par la modal
+      throw error;
+    }
   };
 
   const handleDelete = (deck: Deck) => {
@@ -42,31 +71,26 @@ export function DecksPage() {
   };
 
   const handleCreateDeckSubmit = async (deckData: CreateDeckData) => {
-    try {
-      // Mapper le niveau de difficulté vers le type DeckCategory
-      const difficultyMap: Record<string, DeckCategory> = {
-        débutant: 'vocabulary',
-        intermédiaire: 'grammar',
-        avancé: 'culture',
-      };
+    // Mapper le niveau de difficulté vers le type DeckCategory
+    const difficultyMap: Record<string, DeckCategory> = {
+      débutant: 'vocabulary',
+      intermédiaire: 'grammar',
+      avancé: 'culture',
+    };
 
-      const newDeck = {
-        name: deckData.name,
-        description: deckData.description,
-        category: difficultyMap[deckData.difficultyLevel] || 'vocabulary',
-        tags: deckData.tags,
-        isPublic: deckData.isPublic,
-        cardCount: 0,
-        userId: 'current-user', // Sera remplacé par l'ID réel de l'utilisateur connecté
-      };
+    const newDeck = {
+      name: deckData.name,
+      description: deckData.description,
+      category: difficultyMap[deckData.difficultyLevel] || 'vocabulary',
+      tags: deckData.tags,
+      isPublic: deckData.isPublic,
+      cardCount: 0,
+      userId: user?.id || '', // ✅ Utiliser l'ID de l'utilisateur connecté
+    };
 
-      // Créer le deck dans Supabase
-      await addDeck(newDeck);
-      console.log('Deck créé avec succès dans Supabase');
-    } catch (error) {
-      console.error('Erreur lors de la création du deck:', error);
-      // TODO: Afficher une notification d'erreur à l'utilisateur
-    }
+    // Créer le deck dans Supabase
+    await addDeck(newDeck);
+    console.log('Deck créé avec succès dans Supabase');
   };
 
   return (
@@ -103,25 +127,46 @@ export function DecksPage() {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleCreateDeck}
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-occitan-orange hover:bg-occitan-red focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange transition-colors duration-200"
-          >
-            <svg
-              className="-ml-1 mr-2 h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={handleCreateDeck}
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-occitan-orange hover:bg-occitan-red focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange transition-colors duration-200"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            Créer un Deck
-          </button>
+              <svg
+                className="-ml-1 mr-2 h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              Créer un Deck
+            </button>
+            <button
+              onClick={() => navigate('/cards')}
+              className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange transition-colors duration-200"
+            >
+              <svg
+                className="-ml-1 mr-2 h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              Créer des cartes
+            </button>
+          </div>
         </div>
 
         {/* Statistiques */}
@@ -130,13 +175,50 @@ export function DecksPage() {
         {/* Filtres */}
         <DeckFilters filters={filters} onFiltersChange={updateFilters} />
 
+        {/* Indicateurs de chargement et d'erreur */}
+        {loading && (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-occitan-orange"></div>
+            <span className="ml-2 text-gray-600">Chargement des decks...</span>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  Erreur de chargement
+                </h3>
+                <p className="mt-1 text-sm text-red-700">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Grille des decks */}
-        <DeckGrid
-          decks={decks}
-          onEdit={handleEdit}
-          onDuplicate={handleDuplicate}
-          onDelete={handleDelete}
-        />
+        {!loading && !error && (
+          <DeckGrid
+            decks={decks}
+            onCreateDeck={handleCreateDeck}
+            onEdit={handleEdit}
+            onDuplicate={handleDuplicate}
+            onDelete={handleDelete}
+          />
+        )}
 
         {/* Modal de confirmation de suppression */}
         {showDeleteConfirm && (

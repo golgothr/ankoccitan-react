@@ -4,7 +4,7 @@ import { IoClose, IoAdd, IoPricetag, IoEye, IoEyeOff } from 'react-icons/io5';
 interface CreateDeckModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (deckData: CreateDeckData) => void;
+  onSubmit: (deckData: CreateDeckData) => Promise<void>; // ✅ Rendre asynchrone
 }
 
 export interface CreateDeckData {
@@ -56,12 +56,22 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
-      onSubmit(formData);
-      handleClose();
+      try {
+        await onSubmit(formData); // ✅ Attendre la résolution
+        handleClose();
+      } catch (error) {
+        // ✅ Gérer l'erreur
+        setErrors({
+          submit:
+            error instanceof Error
+              ? error.message
+              : 'Erreur lors de la création du deck',
+        });
+      }
     }
   };
 
@@ -290,6 +300,13 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
               />
             </button>
           </div>
+
+          {/* Erreur de soumission */}
+          {errors.submit && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-600">{errors.submit}</p>
+            </div>
+          )}
 
           {/* Actions */}
           <div className="flex gap-3 pt-4 border-t border-gray-200">

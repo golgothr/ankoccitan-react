@@ -3,6 +3,7 @@ import { DeckCard } from './DeckCard';
 
 interface DeckGridProps {
   decks: Deck[];
+  onCreateDeck?: () => void; // ✅ Nouveau prop pour le bouton de création
   onEdit: (deck: Deck) => void;
   onDuplicate: (deck: Deck) => void;
   onDelete: (deck: Deck) => void;
@@ -10,6 +11,7 @@ interface DeckGridProps {
 
 export function DeckGrid({
   decks,
+  onCreateDeck,
   onEdit,
   onDuplicate,
   onDelete,
@@ -37,7 +39,10 @@ export function DeckGrid({
           Commencez par créer votre premier deck de cartes.
         </p>
         <div className="mt-6">
-          <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-occitan-orange hover:bg-occitan-red focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange">
+          <button
+            onClick={onCreateDeck}
+            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-occitan-orange hover:bg-occitan-red focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange transition-colors duration-200"
+          >
             <svg
               className="-ml-1 mr-2 h-5 w-5"
               fill="none"
