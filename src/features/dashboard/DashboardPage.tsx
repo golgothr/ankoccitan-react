@@ -10,14 +10,11 @@ export function DashboardPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-occitan-light">
       {/* Header */}
-      <DashboardHeader 
-        onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
-        sidebarOpen={sidebarOpen}
-      />
+      <DashboardHeader onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
 
       <div className="flex">
         {/* Sidebar */}
-        <DashboardSidebar 
+        <DashboardSidebar
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
@@ -31,11 +28,11 @@ export function DashboardPage() {
 
       {/* Overlay pour mobile */}
       {sidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
     </div>
   );
-} 
+}
