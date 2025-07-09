@@ -19,8 +19,15 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
   const { logout } = useAuth();
 
   const handleLogout = async () => {
-    await logout();
-    window.location.href = '/';
+    try {
+      console.log('[DashboardHeader] Déconnexion en cours...');
+      await logout();
+      // La redirection est gérée dans la fonction logout
+    } catch (error) {
+      console.error('[DashboardHeader] Erreur lors de la déconnexion:', error);
+      // Forcer la redirection même en cas d'erreur
+      window.location.href = '/';
+    }
   };
 
   return (

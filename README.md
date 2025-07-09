@@ -395,10 +395,9 @@ import { apiClient } from '@core/api/apiClient';
 
 ### 🔄 En Cours de Développement
 
-- **Page de création de deck** (`/decks/create`)
 - **Page d'édition de deck** (`/decks/:id/edit`)
 - **Page de visualisation de deck** (`/decks/:id`)
-- **Système de cartes** dans les decks
+- **Système de cartes** dans les decks (✅ **Implémenté**)
 - **Export ANKI** (format `.apkg`)
 
 ### 📋 Prochaines Étapes

@@ -49,7 +49,20 @@ export function UserProfilePage() {
 
           <div className="mt-6">
             <button
-              onClick={logout}
+              onClick={async () => {
+                try {
+                  console.log('[UserProfilePage] Déconnexion en cours...');
+                  await logout();
+                  // La redirection est gérée dans la fonction logout
+                } catch (error) {
+                  console.error(
+                    '[UserProfilePage] Erreur lors de la déconnexion:',
+                    error
+                  );
+                  // Forcer la redirection même en cas d'erreur
+                  window.location.href = '/';
+                }
+              }}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
               Se déconnecter

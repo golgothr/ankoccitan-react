@@ -12,6 +12,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
+    storage: window.localStorage,
+    storageKey: 'ankoccitan-auth',
   },
 });
 
