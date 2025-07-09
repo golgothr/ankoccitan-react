@@ -26,6 +26,9 @@ describe("LoginForm - Tests d'intégration avancés", () => {
           id: '1',
           email: 'test@example.com',
           name: 'Test User',
+          username: 'testuser',
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
         },
         token: 'mock-jwt-token',
       };
@@ -91,7 +94,14 @@ describe("LoginForm - Tests d'intégration avancés", () => {
       vi.mocked(loginUser)
         .mockRejectedValueOnce(mockApiError('Erreur réseau'))
         .mockResolvedValueOnce({
-          user: { id: '1', email: 'test@example.com', name: 'Test User' },
+          user: {
+            id: '1',
+            email: 'test@example.com',
+            name: 'Test User',
+            username: 'testuser',
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+          },
           token: 'mock-jwt-token',
         });
 
@@ -269,6 +279,9 @@ describe("LoginForm - Tests d'intégration avancés", () => {
                     id: '1',
                     email: 'test@example.com',
                     name: 'Test User',
+                    username: 'testuser',
+                    created_at: '2024-01-01T00:00:00Z',
+                    updated_at: '2024-01-01T00:00:00Z',
                   },
                   token: 'test',
                 }),
@@ -318,6 +331,9 @@ describe("LoginForm - Tests d'intégration avancés", () => {
                     id: '1',
                     email: 'test@example.com',
                     name: 'Test User',
+                    username: 'testuser',
+                    created_at: '2024-01-01T00:00:00Z',
+                    updated_at: '2024-01-01T00:00:00Z',
                   },
                   token: 'test',
                 }),
