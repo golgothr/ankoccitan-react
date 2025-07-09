@@ -39,6 +39,12 @@ export interface DeckRow {
   user_id: string;
   is_public: boolean;
   language: string;
+  category:
+    | 'grammar'
+    | 'conjugation'
+    | 'vocabulary'
+    | 'expressions'
+    | 'culture';
   difficulty_level: 'débutant' | 'intermédiaire' | 'avancé';
   card_count: number;
   tags: string[];
@@ -52,6 +58,12 @@ export interface DeckInsert {
   user_id: string;
   is_public?: boolean;
   language?: string;
+  category?:
+    | 'grammar'
+    | 'conjugation'
+    | 'vocabulary'
+    | 'expressions'
+    | 'culture';
   difficulty_level?: 'débutant' | 'intermédiaire' | 'avancé';
   tags?: string[];
 }
@@ -61,6 +73,12 @@ export interface DeckUpdate {
   description?: string;
   is_public?: boolean;
   language?: string;
+  category?:
+    | 'grammar'
+    | 'conjugation'
+    | 'vocabulary'
+    | 'expressions'
+    | 'culture';
   difficulty_level?: 'débutant' | 'intermédiaire' | 'avancé';
   tags?: string[];
 }

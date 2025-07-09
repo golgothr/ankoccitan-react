@@ -5,12 +5,15 @@ export type DeckCategory =
   | 'expressions'
   | 'culture';
 
+export type DeckDifficulty = 'débutant' | 'intermédiaire' | 'avancé';
+
 export interface Deck {
   id: string;
   name: string;
   description: string;
   cardCount: number;
   category: DeckCategory;
+  difficulty: DeckDifficulty;
   tags: string[];
   lastModified: Date;
   isPublic: boolean;

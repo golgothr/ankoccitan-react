@@ -230,9 +230,9 @@ export async function searchDecks(
     );
   }
 
-  // Filtre par niveau de difficulté
+  // Filtre par catégorie
   if (filters.category && filters.category !== 'all') {
-    supabaseQuery = supabaseQuery.eq('difficulty_level', filters.category);
+    supabaseQuery = supabaseQuery.eq('category', filters.category);
   }
 
   // Filtre par visibilité

@@ -5,12 +5,20 @@ import { DeckFilters } from './components/DeckFilters';
 import { DeckStats } from './components/DeckStats';
 import { DeckGrid } from './components/DeckGrid';
 import { CreateDeckModal, CreateDeckData } from './components/CreateDeckModal';
-import { Deck, DeckCategory } from './types/deck.types';
+import { Deck, DeckDifficulty } from './types/deck.types';
 
 export function DecksPage() {
   const navigate = useNavigate();
-  const { decks, stats, filters, updateFilters, deleteDeck, addDeck } =
-    useDecks();
+  const {
+    decks,
+    stats,
+    filters,
+    loading,
+    error,
+    updateFilters,
+    deleteDeck,
+    addDeck,
+  } = useDecks();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
     null
   );
@@ -43,31 +51,32 @@ export function DecksPage() {
 
   const handleCreateDeckSubmit = async (deckData: CreateDeckData) => {
     try {
-      // Mapper le niveau de difficulté vers le type DeckCategory
-      const difficultyMap: Record<string, DeckCategory> = {
-        débutant: 'vocabulary',
-        intermédiaire: 'grammar',
-        avancé: 'culture',
-      };
-
       const newDeck = {
         name: deckData.name,
         description: deckData.description,
-        category: difficultyMap[deckData.difficultyLevel] || 'vocabulary',
+        category: deckData.category,
+        difficulty: deckData.difficultyLevel as DeckDifficulty,
         tags: deckData.tags,
         isPublic: deckData.isPublic,
         cardCount: 0,
-        userId: 'current-user', // Sera remplacé par l'ID réel de l'utilisateur connecté
       };
 
-      // Créer le deck dans Supabase
       await addDeck(newDeck);
       console.log('Deck créé avec succès dans Supabase');
     } catch (error) {
       console.error('Erreur lors de la création du deck:', error);
-      // TODO: Afficher une notification d'erreur à l'utilisateur
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">Chargement...</div>
+    );
+  }
+
+  if (error) {
+    return <div className="text-center py-12 text-red-600">{error}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-occitan-orange/10 via-white to-occitan-red/10">
@@ -136,6 +145,7 @@ export function DecksPage() {
           onEdit={handleEdit}
           onDuplicate={handleDuplicate}
           onDelete={handleDelete}
+          onCreate={handleCreateDeck}
         />
 
         {/* Modal de confirmation de suppression */}

@@ -1,5 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Deck, DeckFilters, DeckCategory } from '../types/deck.types';
+import {
+  Deck,
+  DeckFilters,
+  DeckCategory,
+  DeckDifficulty,
+} from '../types/deck.types';
 import {
   filterDecks,
   sortDecks,
@@ -21,6 +26,7 @@ const MOCK_DECKS: Deck[] = [
     description: 'Les règles fondamentales de la grammaire occitane',
     cardCount: 45,
     category: 'grammar',
+    difficulty: 'débutant',
     tags: ['quotidien', 'basique'],
     lastModified: new Date('2024-01-15'),
     isPublic: true,
@@ -33,6 +39,7 @@ const MOCK_DECKS: Deck[] = [
     description: 'Conjugaison des verbes au présent',
     cardCount: 23,
     category: 'conjugation',
+    difficulty: 'intermédiaire',
     tags: ['quotidien', 'travail'],
     lastModified: new Date('2024-01-14'),
     isPublic: false,
@@ -45,6 +52,7 @@ const MOCK_DECKS: Deck[] = [
     description: 'Mots de vocabulaire liés à la famille',
     cardCount: 67,
     category: 'vocabulary',
+    difficulty: 'débutant',
     tags: ['famille', 'quotidien'],
     lastModified: new Date('2024-01-12'),
     isPublic: true,
@@ -57,6 +65,7 @@ const MOCK_DECKS: Deck[] = [
     description: 'Expressions courantes en occitan',
     cardCount: 12,
     category: 'expressions',
+    difficulty: 'avancé',
     tags: ['culture', 'quotidien'],
     lastModified: new Date('2024-01-13'),
     isPublic: true,
@@ -89,7 +98,8 @@ export function useDecks() {
     id: deckRow.id,
     name: deckRow.title,
     description: deckRow.description || '',
-    category: deckRow.difficulty_level as DeckCategory,
+    category: deckRow.category as DeckCategory,
+    difficulty: deckRow.difficulty_level as DeckDifficulty,
     tags: deckRow.tags,
     isPublic: deckRow.is_public,
     cardCount: deckRow.card_count,
@@ -131,13 +141,14 @@ export function useDecks() {
   };
 
   const addDeck = async (
-    deck: Omit<Deck, 'id' | 'createdAt' | 'lastModified'>
+    deck: Omit<Deck, 'id' | 'createdAt' | 'lastModified' | 'userId'>
   ) => {
     try {
       const deckData = {
         title: deck.name,
         description: deck.description,
-        difficulty_level: deck.category as
+        category: deck.category,
+        difficulty_level: deck.difficulty as
           | 'débutant'
           | 'intermédiaire'
           | 'avancé',
@@ -157,9 +168,14 @@ export function useDecks() {
   const updateDeck = async (id: string, updates: Partial<Deck>) => {
     try {
       const updateData: Record<string, unknown> = {};
-      if (updates.name) updateData.name = updates.name;
+      if (updates.name) updateData.title = updates.name;
       if (updates.description) updateData.description = updates.description;
       if (updates.category) updateData.category = updates.category;
+      if (updates.difficulty)
+        updateData.difficulty_level = updates.difficulty as
+          | 'débutant'
+          | 'intermédiaire'
+          | 'avancé';
       if (updates.tags) updateData.tags = updates.tags;
       if (updates.isPublic !== undefined)
         updateData.is_public = updates.isPublic;

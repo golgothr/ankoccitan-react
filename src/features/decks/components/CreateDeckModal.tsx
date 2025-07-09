@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { IoClose, IoAdd, IoPricetag, IoEye, IoEyeOff } from 'react-icons/io5';
+import { DECK_CATEGORIES, DeckCategory } from '../types/deck.types';
 
 interface CreateDeckModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (deckData: CreateDeckData) => void;
+  onSubmit: (deckData: CreateDeckData) => Promise<void> | void;
 }
 
 export interface CreateDeckData {
   name: string;
   description: string;
+  category: DeckCategory;
   difficultyLevel: string;
   tags: string[];
   isPublic: boolean;
@@ -25,12 +27,14 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
   const [formData, setFormData] = useState<CreateDeckData>({
     name: '',
     description: '',
+    category: 'grammar' as DeckCategory,
     difficultyLevel: '',
     tags: [],
     isPublic: false,
   });
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -52,16 +56,24 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
       newErrors.category = 'Veuillez sélectionner un niveau de difficulté';
     }
 
+    if (!formData.category) {
+      newErrors.category = 'Veuillez sélectionner une catégorie';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateForm()) {
-      onSubmit(formData);
-      handleClose();
+      try {
+        await onSubmit(formData);
+        handleClose();
+      } catch {
+        setSubmitError('Erreur lors de la création du deck');
+      }
     }
   };
 
@@ -69,12 +81,14 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
     setFormData({
       name: '',
       description: '',
+      category: 'grammar' as DeckCategory,
       difficultyLevel: '',
       tags: [],
       isPublic: false,
     });
     setTagInput('');
     setErrors({});
+    setSubmitError(null);
     onClose();
   };
 
@@ -173,6 +187,38 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
             />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+            )}
+          </div>
+
+          {/* Catégorie */}
+          <div>
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Catégorie *
+            </label>
+            <select
+              id="category"
+              value={formData.category}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  category: e.target.value as DeckCategory,
+                }))
+              }
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.category ? 'border-red-500' : 'border-gray-300'
+              }`}
+            >
+              {Object.entries(DECK_CATEGORIES).map(([key, label]) => (
+                <option key={key} value={key}>
+                  {label}
+                </option>
+              ))}
+            </select>
+            {errors.category && (
+              <p className="mt-1 text-sm text-red-600">{errors.category}</p>
             )}
           </div>
 
@@ -290,6 +336,8 @@ export const CreateDeckModal: React.FC<CreateDeckModalProps> = ({
               />
             </button>
           </div>
+
+          {submitError && <p className="text-sm text-red-600">{submitError}</p>}
 
           {/* Actions */}
           <div className="flex gap-3 pt-4 border-t border-gray-200">
