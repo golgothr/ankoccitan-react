@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useDecks } from '../../decks/hooks/useDecks';
 
 interface DashboardSidebarProps {
@@ -14,7 +14,6 @@ interface NavItem {
 }
 
 export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
-  const location = useLocation();
   const { decks } = useDecks();
 
   const navItems: NavItem[] = [
@@ -123,9 +122,6 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
     },
   ];
 
-  const isActive = (href: string) => {
-    return location.pathname === href;
-  };
 
   return (
     <>
@@ -134,42 +130,43 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
         <div className="flex flex-col w-64">
           <div className="flex flex-col h-0 flex-1 bg-white/80 backdrop-blur-sm border-r border-orange-200">
             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-              <nav className="mt-5 flex-1 px-2 space-y-1">
-                {navItems.map((item) => {
-                  const active = isActive(item.href);
-                  return (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                        active
+              <nav className="mt-5 flex-1 px-2 space-y-1" role="navigation" aria-label="Sidebar principale">
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.name}
+                    to={item.href}
+                    className={({ isActive }) =>
+                      `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                        isActive
                           ? 'bg-gradient-to-r from-occitan-red to-occitan-orange text-white shadow-lg'
                           : 'text-gray-700 hover:bg-orange-50 hover:text-occitan-orange'
-                      }`}
-                      onClick={onClose}
-                    >
-                      <div
-                        className={`mr-3 flex-shrink-0 h-6 w-6 flex items-center justify-center ${
-                          active ? 'text-white' : 'text-occitan-orange'
-                        }`}
-                      >
-                        {item.icon}
-                      </div>
-                      <span className="flex-1">{item.name}</span>
-                      {typeof item.badge === 'number' && item.badge > 0 && (
-                        <span
-                          className={`ml-auto inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            active
-                              ? 'bg-white/20 text-white'
-                              : 'bg-occitan-red text-white'
+                      }`
+                    }
+                    onClick={onClose}
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <div
+                          className={`mr-3 flex-shrink-0 h-6 w-6 flex items-center justify-center ${
+                            isActive ? 'text-white' : 'text-occitan-orange'
                           }`}
                         >
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
-                  );
-                })}
+                          {item.icon}
+                        </div>
+                        <span className="flex-1">{item.name}</span>
+                        {typeof item.badge === 'number' && item.badge > 0 && (
+                          <span
+                            className={`ml-auto inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              isActive ? 'bg-white/20 text-white' : 'bg-occitan-red text-white'
+                            }`}
+                          >
+                            {item.badge}
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </NavLink>
+                ))}
               </nav>
             </div>
           </div>
@@ -206,42 +203,43 @@ export function DashboardSidebar({ isOpen, onClose }: DashboardSidebarProps) {
           </div>
 
           <div className="flex-1 flex flex-col overflow-y-auto">
-            <nav className="flex-1 px-2 py-4 space-y-1">
-              {navItems.map((item) => {
-                const active = isActive(item.href);
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                      active
+            <nav className="flex-1 px-2 py-4 space-y-1" role="navigation" aria-label="Sidebar principale">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.name}
+                  to={item.href}
+                  className={({ isActive }) =>
+                    `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                      isActive
                         ? 'bg-gradient-to-r from-occitan-red to-occitan-orange text-white shadow-lg'
                         : 'text-gray-700 hover:bg-orange-50 hover:text-occitan-orange'
-                    }`}
-                    onClick={onClose}
-                  >
-                    <div
-                      className={`mr-3 flex-shrink-0 h-6 w-6 flex items-center justify-center ${
-                        active ? 'text-white' : 'text-occitan-orange'
-                      }`}
-                    >
-                      {item.icon}
-                    </div>
-                    <span className="flex-1">{item.name}</span>
-                    {typeof item.badge === 'number' && item.badge > 0 && (
-                      <span
-                        className={`ml-auto inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          active
-                            ? 'bg-white/20 text-white'
-                            : 'bg-occitan-red text-white'
+                    }`
+                  }
+                  onClick={onClose}
+                >
+                  {({ isActive }) => (
+                    <>
+                      <div
+                        className={`mr-3 flex-shrink-0 h-6 w-6 flex items-center justify-center ${
+                          isActive ? 'text-white' : 'text-occitan-orange'
                         }`}
                       >
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
+                        {item.icon}
+                      </div>
+                      <span className="flex-1">{item.name}</span>
+                      {typeof item.badge === 'number' && item.badge > 0 && (
+                        <span
+                          className={`ml-auto inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            isActive ? 'bg-white/20 text-white' : 'bg-occitan-red text-white'
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              ))}
             </nav>
           </div>
         </div>
