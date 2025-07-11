@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/core/hooks/useAuth';
 import logo from '@/assets/logo.png';
 import avatarImg from '@/assets/croix_occitane.png';
@@ -10,6 +10,8 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +20,21 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
   };
 
   const { user, logout } = useAuth();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const handleLogout = async () => {
     try {
@@ -145,10 +162,13 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
           </button>
 
           {/* Avatar et menu utilisateur */}
-          <div className="relative">
+          <div className="relative" ref={menuRef}>
             <button
               className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-occitan-orange transition-colors duration-200"
               aria-label="Menu utilisateur"
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              aria-haspopup="true"
+              aria-expanded={isMenuOpen}
             >
               <img src={avatarImg} alt="Avatar" className="h-8 w-8 rounded-full" />
               <span className="hidden sm:block text-sm font-medium text-gray-700">
@@ -166,24 +186,33 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
             </button>
 
             {/* Menu déroulant utilisateur */}
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-              <Link
-                to="/profile"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-              >
-                Mon profil
-              </Link>
-              <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                Paramètres
-              </button>
-              <hr className="my-1" />
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
-              >
-                Se déconnecter
-              </button>
-            </div>
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <Link
+                  to="/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                >
+                  Mon profil
+                </Link>
+                <button
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                >
+                  Paramètres
+                </button>
+                <hr className="my-1" />
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    handleLogout();
+                  }}
+                  className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
+                >
+                  Se déconnecter
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
