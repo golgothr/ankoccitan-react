@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Toast } from '../../../../components/Toast';
 import { CardFormData } from '../../types/card.types';
 
 interface FrenchToOccitanCardProps {
@@ -23,6 +24,7 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
   const [isSearchingImage, setIsSearchingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Simuler l'API de traduction (à remplacer par l'API réelle)
   const translateToOccitan = async (text: string): Promise<string> => {
@@ -253,9 +255,16 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
 
         {/* Options avancées */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-700">
-            Options avancées
-          </h4>
+          <button
+            type="button"
+            onClick={() => setShowAdvanced((v) => !v)}
+            className="flex items-center justify-between w-full px-3 py-2 bg-gray-100 rounded"
+          >
+            <span className="text-sm font-medium text-gray-700">Options avancées</span>
+            <span className="text-sm">{showAdvanced ? '-' : '+'}</span>
+          </button>
+          {showAdvanced && (
+            <>
 
           {/* Audio */}
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -339,6 +348,8 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
               </div>
             )}
           </div>
+        </>
+        )}
         </div>
 
         {/* Bouton d'ajout */}
@@ -368,17 +379,18 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
         </div>
       </div>
 
-      {/* Messages de feedback */}
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
+        <Toast
+          type="error"
+          message={error}
+          onClose={() => setError(null)}
+        />
       )}
-
       {success && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-sm text-green-600">{success}</p>
-        </div>
+        <Toast
+          message={success}
+          onClose={() => setSuccess(null)}
+        />
       )}
     </div>
   );

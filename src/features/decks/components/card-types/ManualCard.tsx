@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Toast } from '../../../../components/Toast';
 import { CardFormData } from '../../types/card.types';
 
 interface ManualCardProps {
@@ -218,17 +219,18 @@ export const ManualCard: React.FC<ManualCardProps> = ({ onCardCreated }) => {
         </div>
       </div>
 
-      {/* Messages de feedback */}
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
+        <Toast
+          type="error"
+          message={error}
+          onClose={() => setError(null)}
+        />
       )}
-
       {success && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-sm text-green-600">{success}</p>
-        </div>
+        <Toast
+          message={success}
+          onClose={() => setSuccess(null)}
+        />
       )}
     </div>
   );
