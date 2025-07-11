@@ -11,6 +11,7 @@ import { AuthPage } from './features/auth/AuthPage';
 import { DashboardPage } from './features/dashboard/DashboardPage';
 import { DecksPage } from './features/decks/DecksPage';
 import { CardCreationPage } from './features/decks/pages/CardCreationPage';
+import { ImportPage } from './features/import/ImportPage';
 import { TermsPage } from './features/legal/TermsPage';
 import { PrivacyPage } from './features/legal/PrivacyPage';
 import { NotFoundPage } from './features/common/NotFoundPage';
@@ -57,6 +58,14 @@ export function AppRouter() {
             element={
               <RequireAuth>
                 <CardCreationPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/import"
+            element={
+              <RequireAuth>
+                <ImportPage />
               </RequireAuth>
             }
           />
