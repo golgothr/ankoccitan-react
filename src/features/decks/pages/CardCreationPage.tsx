@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CardCreator } from '../components/CardCreator';
 import { useDecks } from '../hooks/useDecks';
+import { CardType } from '../types/card.types';
+import occitanFlag from '../../../assets/blason_occitanie.png';
+
+const AVAILABLE_TYPES: CardType[] = ['revirada', 'pexels', 'cloze', 'manual'];
 // import { Deck } from '../types/deck.types';
 
 export const CardCreationPage: React.FC = () => {
@@ -11,6 +15,7 @@ export const CardCreationPage: React.FC = () => {
   const [selectedDeckId, setSelectedDeckId] = useState<string | undefined>(
     deckId
   );
+  const [activeTab, setActiveTab] = useState<CardType>('revirada');
 
   // Si un deckId est fourni dans l'URL, l'utiliser
   React.useEffect(() => {
@@ -56,6 +61,31 @@ export const CardCreationPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Onglets type de carte */}
+        <div className="flex justify-center gap-2 mt-4">
+          {AVAILABLE_TYPES.map((type) => (
+            <button
+              key={type}
+              onClick={() => setActiveTab(type)}
+              className={`flex items-center px-4 py-2 rounded-t-lg border-b-2 font-medium ${activeTab === type ? 'bg-gradient-to-r from-occitan-red to-occitan-orange text-white border-occitan-red shadow' : 'bg-white text-gray-700 border-transparent hover:bg-gray-100'}`}
+            >
+              <span className="mr-2">
+                {type === 'revirada' && '🇫🇷'}
+                {type === 'pexels' && '🖼️'}
+                {type === 'cloze' && '✂️'}
+                {type === 'manual' && '✍️'}
+              </span>
+              {type === 'revirada' && (
+                <img src={occitanFlag} alt="Occitan" className="w-4 h-4 mr-1" />
+              )}
+              {type === 'revirada' ? 'Français → Occitan' : ''}
+              {type === 'pexels' ? 'Image → Occitan' : ''}
+              {type === 'cloze' ? 'Texte à trous' : ''}
+              {type === 'manual' ? 'Manuel' : ''}
+            </button>
+          ))}
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Sélection du deck */}
           <div>
@@ -80,7 +110,12 @@ export const CardCreationPage: React.FC = () => {
           {/* Affichage conditionnel du CardCreator */}
           <div>
             {selectedDeckId ? (
-              <CardCreator deckId={selectedDeckId} />
+              <CardCreator
+                deckId={selectedDeckId}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                hideTabs
+              />
             ) : (
               <div className="text-center py-12">
                 <svg
