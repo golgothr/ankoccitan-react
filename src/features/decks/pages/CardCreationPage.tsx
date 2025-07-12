@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CardCreator } from '../components/CardCreator';
 import { useDecks } from '../hooks/useDecks';
+import { CardType } from '../types/card.types';
+import occitanFlag from '../../../assets/blason_occitanie.png';
+import { FormGroup } from '../../../components/FormGroup';
+
+const AVAILABLE_TYPES: CardType[] = ['revirada', 'pexels', 'cloze', 'manual'];
 // import { Deck } from '../types/deck.types';
 
 export const CardCreationPage: React.FC = () => {
@@ -11,6 +16,7 @@ export const CardCreationPage: React.FC = () => {
   const [selectedDeckId, setSelectedDeckId] = useState<string | undefined>(
     deckId
   );
+  const [activeTab, setActiveTab] = useState<CardType>('revirada');
 
   // Si un deckId est fourni dans l'URL, l'utiliser
   React.useEffect(() => {
@@ -29,7 +35,7 @@ export const CardCreationPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-occitan-orange/10 via-white to-occitan-red/10">
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="container mx-auto px-4 sm:px-8 lg:px-16 py-8 space-y-6">
         {/* En-tête avec navigation */}
         <div className="sticky top-0 z-10 bg-white/70 backdrop-blur flex items-center justify-between px-4 py-3 shadow-sm">
           <button
@@ -56,12 +62,34 @@ export const CardCreationPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Onglets type de carte */}
+        <div className="flex justify-center gap-2 mt-4">
+          {AVAILABLE_TYPES.map((type) => (
+            <button
+              key={type}
+              onClick={() => setActiveTab(type)}
+              className={`flex items-center px-4 py-2 rounded-t-lg border-b-2 font-medium ${activeTab === type ? 'bg-gradient-to-r from-occitan-red to-occitan-orange text-white border-occitan-red shadow' : 'bg-white text-gray-700 border-transparent hover:bg-gray-100'}`}
+            >
+              <span className="mr-2">
+                {type === 'revirada' && '🇫🇷'}
+                {type === 'pexels' && '🖼️'}
+                {type === 'cloze' && '✂️'}
+                {type === 'manual' && '✍️'}
+              </span>
+              {type === 'revirada' && (
+                <img src={occitanFlag} alt="Occitan" className="w-4 h-4 mr-1" />
+              )}
+              {type === 'revirada' ? 'Français → Occitan' : ''}
+              {type === 'pexels' ? 'Image → Occitan' : ''}
+              {type === 'cloze' ? 'Texte à trous' : ''}
+              {type === 'manual' ? 'Manuel' : ''}
+            </button>
+          ))}
+        </div>
+
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Sélection du deck */}
-          <div>
-            <label htmlFor="deck-select" className="block text-sm font-medium text-gray-700 mb-2">
-              Sélectionner un deck
-            </label>
+          <FormGroup label="Sélectionner un deck" icon="📁">
             <select
               id="deck-select"
               value={selectedDeckId || ''}
@@ -75,12 +103,17 @@ export const CardCreationPage: React.FC = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </FormGroup>
 
           {/* Affichage conditionnel du CardCreator */}
           <div>
             {selectedDeckId ? (
-              <CardCreator deckId={selectedDeckId} />
+              <CardCreator
+                deckId={selectedDeckId}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                hideTabs
+              />
             ) : (
               <div className="text-center py-12">
                 <svg
