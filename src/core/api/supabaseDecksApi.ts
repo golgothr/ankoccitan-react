@@ -1,262 +1,118 @@
-import { supabase } from '../lib/supabase';
-import type { DeckRow, DeckInsert, DeckUpdate } from '../lib/supabase';
+import { supabase } from '@/core/lib/supabase';
+import type { DeckRow } from '@/core/lib/supabase';
 
-// Récupérer tous les decks de l'utilisateur connecté
 export async function fetchUserDecks(): Promise<DeckRow[]> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error('Utilisateur non connecté');
-  }
-
   const { data, error } = await supabase
     .from('decks')
-    .select('*')
-    .eq('user_id', user.id)
+    .select(
+      `
+      *,
+      cards(count)
+    `
+    )
     .order('created_at', { ascending: false });
 
   if (error) {
     console.error('Erreur lors de la récupération des decks:', error);
-    throw new Error('Impossible de récupérer les decks');
+    throw error;
   }
 
   return data || [];
 }
 
-// Récupérer un deck par ID
-export async function fetchDeckById(deckId: string): Promise<DeckRow | null> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error('Utilisateur non connecté');
-  }
-
-  const { data, error } = await supabase
+export async function fetchDeckStats() {
+  // Récupérer le nombre total de decks
+  const { count: deckCount, error: deckError } = await supabase
     .from('decks')
-    .select('*')
-    .eq('id', deckId)
-    .eq('user_id', user.id)
-    .single();
+    .select('*', { count: 'exact', head: true });
 
-  if (error) {
-    console.error('Erreur lors de la récupération du deck:', error);
-    return null;
+  if (deckError) {
+    console.error('Erreur lors du comptage des decks:', deckError);
+    throw deckError;
   }
 
-  return data;
+  // Récupérer le nombre total de cartes
+  const { count: cardCount, error: cardError } = await supabase
+    .from('cards')
+    .select('*', { count: 'exact', head: true });
+
+  if (cardError) {
+    console.error('Erreur lors du comptage des cartes:', cardError);
+    throw cardError;
+  }
+
+  return {
+    totalDecks: deckCount || 0,
+    totalCards: cardCount || 0,
+  };
 }
 
-// Créer un nouveau deck
-export async function createDeck(
-  deckData: Omit<DeckInsert, 'user_id'>
-): Promise<DeckRow> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error('Utilisateur non connecté');
-  }
-
-  const newDeck: DeckInsert = {
-    ...deckData,
-    user_id: user.id,
-  };
-
+export async function fetchPublicDecks() {
   const { data, error } = await supabase
     .from('decks')
-    .insert(newDeck)
+    .select(
+      `
+      *,
+      cards(count),
+      users!decks_user_id_fkey(name, username)
+    `
+    )
+    .eq('is_public', true)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Erreur lors de la récupération des decks publics:', error);
+    throw error;
+  }
+
+  return data || [];
+}
+
+export async function createDeck(deckData: {
+  title: string;
+  description?: string;
+  difficulty_level: 'débutant' | 'intermédiaire' | 'avancé';
+  tags?: string[];
+  is_public?: boolean;
+}): Promise<DeckRow> {
+  const { data, error } = await supabase
+    .from('decks')
+    .insert([deckData])
     .select()
     .single();
 
   if (error) {
     console.error('Erreur lors de la création du deck:', error);
-    throw new Error('Impossible de créer le deck');
+    throw error;
   }
 
   return data;
 }
 
-// Mettre à jour un deck
 export async function updateDeck(
-  deckId: string,
-  updates: DeckUpdate
+  id: string,
+  updates: Partial<DeckRow>
 ): Promise<DeckRow> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error('Utilisateur non connecté');
-  }
-
   const { data, error } = await supabase
     .from('decks')
-    .update({
-      ...updates,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', deckId)
-    .eq('user_id', user.id)
+    .update(updates)
+    .eq('id', id)
     .select()
     .single();
 
   if (error) {
     console.error('Erreur lors de la mise à jour du deck:', error);
-    throw new Error('Impossible de mettre à jour le deck');
+    throw error;
   }
 
   return data;
 }
 
-// Supprimer un deck
-export async function deleteDeck(deckId: string): Promise<void> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error('Utilisateur non connecté');
-  }
-
-  const { error } = await supabase
-    .from('decks')
-    .delete()
-    .eq('id', deckId)
-    .eq('user_id', user.id);
+export async function deleteDeck(id: string): Promise<void> {
+  const { error } = await supabase.from('decks').delete().eq('id', id);
 
   if (error) {
     console.error('Erreur lors de la suppression du deck:', error);
-    throw new Error('Impossible de supprimer le deck');
+    throw error;
   }
-}
-
-// Dupliquer un deck
-export async function duplicateDeck(deckId: string): Promise<DeckRow> {
-  const originalDeck = await fetchDeckById(deckId);
-
-  if (!originalDeck) {
-    throw new Error('Deck non trouvé');
-  }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error('Utilisateur non connecté');
-  }
-
-  const duplicatedDeck: DeckInsert = {
-    title: `${originalDeck.title} (copie)`,
-    description: originalDeck.description || undefined,
-    difficulty_level: originalDeck.difficulty_level,
-    tags: originalDeck.tags,
-    is_public: false, // La copie est toujours privée
-    user_id: user.id,
-  };
-
-  return await createDeck(duplicatedDeck);
-}
-
-// Récupérer les statistiques des decks
-export async function fetchDeckStats() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error('Utilisateur non connecté');
-  }
-
-  const { data, error } = await supabase
-    .from('decks')
-    .select('card_count, difficulty_level, created_at')
-    .eq('user_id', user.id);
-
-  if (error) {
-    console.error('Erreur lors de la récupération des statistiques:', error);
-    throw new Error('Impossible de récupérer les statistiques');
-  }
-
-  const stats = {
-    totalDecks: data?.length || 0,
-    totalCards: data?.reduce((sum, deck) => sum + deck.card_count, 0) || 0,
-    difficultyDistribution: {
-      débutant:
-        data?.filter((d) => d.difficulty_level === 'débutant').length || 0,
-      intermédiaire:
-        data?.filter((d) => d.difficulty_level === 'intermédiaire').length || 0,
-      avancé: data?.filter((d) => d.difficulty_level === 'avancé').length || 0,
-    },
-    lastActivity:
-      data?.length > 0
-        ? new Date(
-            Math.max(...data.map((d) => new Date(d.created_at).getTime()))
-          )
-        : null,
-  };
-
-  return stats;
-}
-
-// Rechercher des decks
-export async function searchDecks(
-  query: string,
-  filters: {
-    category?: string;
-    tags?: string[];
-    isPublic?: boolean;
-  }
-) {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    throw new Error('Utilisateur non connecté');
-  }
-
-  let supabaseQuery = supabase.from('decks').select('*').eq('user_id', user.id);
-
-  // Recherche par titre ou description
-  if (query) {
-    supabaseQuery = supabaseQuery.or(
-      `title.ilike.%${query}%,description.ilike.%${query}%`
-    );
-  }
-
-  // Filtre par niveau de difficulté
-  if (filters.category && filters.category !== 'all') {
-    supabaseQuery = supabaseQuery.eq('difficulty_level', filters.category);
-  }
-
-  // Filtre par visibilité
-  if (filters.isPublic !== undefined) {
-    supabaseQuery = supabaseQuery.eq('is_public', filters.isPublic);
-  }
-
-  const { data, error } = await supabaseQuery.order('created_at', {
-    ascending: false,
-  });
-
-  if (error) {
-    console.error('Erreur lors de la recherche des decks:', error);
-    throw new Error('Impossible de rechercher les decks');
-  }
-
-  // Filtre par tags côté client (Supabase ne supporte pas facilement les arrays)
-  if (filters.tags && filters.tags.length > 0) {
-    return (
-      data?.filter((deck) =>
-        filters.tags!.some((tag) => deck.tags.includes(tag))
-      ) || []
-    );
-  }
-
-  return data || [];
 }

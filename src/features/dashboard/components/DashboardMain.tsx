@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { fetchUserDecks } from '@/core/api/supabaseDecksApi';
-import { fetchUserCards } from '@/core/api/supabaseCardsApi';
+import { fetchDeckStats } from '@/core/api/supabaseDecksApi';
+import { fetchRandomCard } from '@/core/api/supabaseCardsApi';
 import type { CardRow } from '@/core/lib/supabase';
 import { useAuth } from '@/core/hooks/useAuth';
 
@@ -8,20 +8,20 @@ export function DashboardMain() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [deckCount, setDeckCount] = useState(0);
-  const [cards, setCards] = useState<CardRow[]>([]);
+  const [cardCount, setCardCount] = useState(0);
   const [randomCard, setRandomCard] = useState<CardRow | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const decks = await fetchUserDecks();
-        setDeckCount(decks.length);
-        const allCards = await fetchUserCards();
-        setCards(allCards);
-        if (allCards.length > 0) {
-          const idx = Math.floor(Math.random() * allCards.length);
-          setRandomCard(allCards[idx]);
-        }
+        // Charger les statistiques des decks
+        const stats = await fetchDeckStats();
+        setDeckCount(stats.totalDecks);
+        setCardCount(stats.totalCards);
+
+        // Charger une carte aléatoire
+        const randomCardData = await fetchRandomCard();
+        setRandomCard(randomCardData);
       } catch (e) {
         console.error('Erreur lors du chargement des données du dashboard:', e);
       } finally {
@@ -35,7 +35,10 @@ export function DashboardMain() {
   if (loading) {
     return (
       <main className="flex-1 overflow-y-auto p-6" role="main">
-        <p>Chargement...</p>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-occitan-orange"></div>
+          <span className="ml-2 text-gray-600">Chargement...</span>
+        </div>
       </main>
     );
   }
@@ -58,7 +61,7 @@ export function DashboardMain() {
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-md flex flex-col items-center justify-center">
             <p className="text-sm text-gray-600 mb-2">Total de cartes</p>
-            <p className="text-4xl font-bold text-gray-900">{cards.length}</p>
+            <p className="text-4xl font-bold text-gray-900">{cardCount}</p>
             <button className="mt-4 text-sm text-occitan-red hover:text-occitan-orange">
               Créer une nouvelle carte
             </button>
