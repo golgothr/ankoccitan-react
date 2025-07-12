@@ -71,7 +71,7 @@ export interface DeckUpdate {
 export interface CardRow {
   id: string;
   deck_id: string;
-  card_type: 'revirada' | 'votz' | 'pexels' | 'manual';
+  card_type: 'revirada' | 'pexels' | 'manual' | 'cloze';
   front_content: string;
   back_content: string;
   pronunciation?: string;
@@ -85,7 +85,7 @@ export interface CardRow {
 
 export interface CardInsert {
   deck_id: string;
-  card_type?: 'revirada' | 'votz' | 'pexels' | 'manual';
+  card_type?: 'revirada' | 'pexels' | 'manual' | 'cloze';
   front_content: string;
   back_content: string;
   pronunciation?: string;
@@ -96,7 +96,7 @@ export interface CardInsert {
 }
 
 export interface CardUpdate {
-  card_type?: 'revirada' | 'votz' | 'pexels' | 'manual';
+  card_type?: 'revirada' | 'pexels' | 'manual' | 'cloze';
   front_content?: string;
   back_content?: string;
   pronunciation?: string;
