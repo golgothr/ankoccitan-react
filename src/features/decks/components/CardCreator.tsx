@@ -9,9 +9,17 @@ import { ManualCard } from './card-types/ManualCard';
 
 interface CardCreatorProps {
   deckId: string;
+  activeTab?: CardType;
+  onTabChange?: (type: CardType) => void;
+  hideTabs?: boolean;
 }
 
-export const CardCreator: React.FC<CardCreatorProps> = ({ deckId }) => {
+export const CardCreator: React.FC<CardCreatorProps> = ({
+  deckId,
+  activeTab: activeTabProp,
+  onTabChange,
+  hideTabs,
+}) => {
   const {
     addCard,
     saveAllPending,
@@ -23,13 +31,24 @@ export const CardCreator: React.FC<CardCreatorProps> = ({ deckId }) => {
     cards,
   } = useCards(deckId);
 
-  const [activeTab, setActiveTab] = useState<CardType>('revirada');
+  const [activeTab, setActiveTab] = useState<CardType>(
+    activeTabProp ?? 'revirada'
+  );
+
+  React.useEffect(() => {
+    if (activeTabProp) {
+      setActiveTab(activeTabProp);
+    }
+  }, [activeTabProp]);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   // Gère le changement d'onglet/type de carte
   const handleTabChange = (type: CardType) => {
-    setActiveTab(type);
+    if (!activeTabProp) {
+      setActiveTab(type);
+    }
+    onTabChange?.(type);
     setFormError(null);
     setSuccess(null);
   };
@@ -90,17 +109,19 @@ export const CardCreator: React.FC<CardCreatorProps> = ({ deckId }) => {
     <div className="grid md:grid-cols-3 gap-6 bg-white rounded shadow p-4">
       <div className="md:col-span-2">
         {/* Navigation verticale */}
-        <div className="flex md:flex-col mb-4 md:mb-0 md:mr-4">
-          {Object.values(CARD_TYPES).map((type) => (
-            <button
-              key={type.id}
-              className={`px-4 py-2 md:w-full text-left border-b md:border-b-0 md:border-l ${activeTab === type.id ? 'bg-orange-200 font-bold border-orange-300' : 'bg-gray-100'}`}
-              onClick={() => handleTabChange(type.id)}
-            >
-              {type.label}
-            </button>
-          ))}
-        </div>
+        {!hideTabs && (
+          <div className="flex md:flex-col mb-4 md:mb-0 md:mr-4">
+            {Object.values(CARD_TYPES).map((type) => (
+              <button
+                key={type.id}
+                className={`px-4 py-2 md:w-full text-left border-b md:border-b-0 md:border-l ${activeTab === type.id ? 'bg-orange-200 font-bold border-orange-300' : 'bg-gray-100'}`}
+                onClick={() => handleTabChange(type.id)}
+              >
+                {type.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Formulaire spécialisé */}
         {renderCardForm()}
