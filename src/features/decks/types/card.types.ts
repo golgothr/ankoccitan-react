@@ -1,4 +1,4 @@
-export type CardType = 'revirada' | 'votz' | 'pexels' | 'manual' | 'cloze';
+export type CardType = 'revirada' | 'pexels' | 'manual' | 'cloze';
 
 export interface Card {
   id: string;
@@ -106,15 +106,6 @@ export const CARD_TYPES: Record<CardType, CardTypeDefinition> = {
     supportsImage: true,
     requiresTranslation: true,
     icon: 'translate',
-  },
-  votz: {
-    id: 'votz',
-    label: 'Audio → Occitan',
-    description: 'Créer des cartes avec audio',
-    supportsAudio: true,
-    supportsImage: false,
-    requiresTranslation: false,
-    icon: 'mic',
   },
   pexels: {
     id: 'pexels',

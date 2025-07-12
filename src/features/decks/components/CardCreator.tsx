@@ -86,14 +86,6 @@ export const CardCreator: React.FC<CardCreatorProps> = ({
     switch (activeTab) {
       case 'revirada':
         return <FrenchToOccitanCard onCardCreated={handleCardCreated} />;
-      case 'votz':
-        return (
-          <div className="text-center py-8">
-            <p className="text-gray-600">
-              Composant Audio → Occitan à implémenter
-            </p>
-          </div>
-        );
       case 'pexels':
         return <ImageToOccitanCard onCardCreated={handleCardCreated} />;
       case 'cloze':
@@ -167,11 +159,13 @@ export const CardCreator: React.FC<CardCreatorProps> = ({
 
       {/* Feedback utilisateur */}
       {formError && (
-        <Toast type="error" message={formError} onClose={() => setFormError(null)} />
+        <Toast
+          type="error"
+          message={formError}
+          onClose={() => setFormError(null)}
+        />
       )}
-      {success && (
-        <Toast message={success} onClose={() => setSuccess(null)} />
-      )}
+      {success && <Toast message={success} onClose={() => setSuccess(null)} />}
       {error && <Toast type="error" message={error} onClose={() => {}} />}
     </div>
   );
