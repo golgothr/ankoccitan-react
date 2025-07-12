@@ -106,15 +106,15 @@ export const CardCreator: React.FC<CardCreatorProps> = ({
   };
 
   return (
-    <div className="grid md:grid-cols-3 gap-6 bg-white rounded shadow p-4">
-      <div className="md:col-span-2">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white rounded-2xl shadow-xl p-6">
+      <div className="space-y-6">
         {/* Navigation verticale */}
         {!hideTabs && (
-          <div className="flex md:flex-col mb-4 md:mb-0 md:mr-4">
+          <div className="flex lg:flex-col mb-4 lg:mb-0 lg:mr-4">
             {Object.values(CARD_TYPES).map((type) => (
               <button
                 key={type.id}
-                className={`px-4 py-2 md:w-full text-left border-b md:border-b-0 md:border-l ${activeTab === type.id ? 'bg-orange-200 font-bold border-orange-300' : 'bg-gray-100'}`}
+                className={`px-4 py-2 lg:w-full text-left border-b lg:border-b-0 lg:border-l ${activeTab === type.id ? 'bg-orange-200 font-bold border-orange-300' : 'bg-gray-100'}`}
                 onClick={() => handleTabChange(type.id)}
               >
                 {type.label}
@@ -152,8 +152,7 @@ export const CardCreator: React.FC<CardCreatorProps> = ({
         </div>
       </div>
 
-      {/* Aperçu / cartes du deck */}
-      <div className="md:col-span-1">
+      <div className="bg-gray-50 p-4 rounded-xl shadow-inner h-fit">
         <h4 className="font-bold mb-2">Cartes du deck</h4>
         <ul className="space-y-1 text-sm">
           {cards.map((card) => (
@@ -165,7 +164,6 @@ export const CardCreator: React.FC<CardCreatorProps> = ({
         </ul>
       </div>
 
-      {/* Feedback utilisateur */}
       {formError && (
         <Toast type="error" message={formError} onClose={() => setFormError(null)} />
       )}

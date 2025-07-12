@@ -4,6 +4,7 @@ import { CardCreator } from '../components/CardCreator';
 import { useDecks } from '../hooks/useDecks';
 import { CardType } from '../types/card.types';
 import occitanFlag from '../../../assets/blason_occitanie.png';
+import { FormGroup } from '../../../components/FormGroup';
 
 const AVAILABLE_TYPES: CardType[] = ['revirada', 'pexels', 'cloze', 'manual'];
 // import { Deck } from '../types/deck.types';
@@ -34,7 +35,7 @@ export const CardCreationPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-occitan-orange/10 via-white to-occitan-red/10">
-      <div className="container mx-auto px-4 py-8 space-y-6">
+      <div className="container mx-auto px-4 sm:px-8 lg:px-16 py-8 space-y-6">
         {/* En-tête avec navigation */}
         <div className="sticky top-0 z-10 bg-white/70 backdrop-blur flex items-center justify-between px-4 py-3 shadow-sm">
           <button
@@ -88,10 +89,7 @@ export const CardCreationPage: React.FC = () => {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Sélection du deck */}
-          <div>
-            <label htmlFor="deck-select" className="block text-sm font-medium text-gray-700 mb-2">
-              Sélectionner un deck
-            </label>
+          <FormGroup label="Sélectionner un deck" icon="📁">
             <select
               id="deck-select"
               value={selectedDeckId || ''}
@@ -105,7 +103,7 @@ export const CardCreationPage: React.FC = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </FormGroup>
 
           {/* Affichage conditionnel du CardCreator */}
           <div>
