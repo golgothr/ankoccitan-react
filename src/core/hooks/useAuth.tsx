@@ -113,6 +113,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const login = (data: { user: User; token: string }) => {
+    // Persist the token and user information for apiClient
+    try {
+      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    } catch (err) {
+      console.error('Erreur lors de la sauvegarde du token:', err);
+    }
     setAuthState({ isLoggedIn: true, user: data.user, token: data.token });
   };
 
