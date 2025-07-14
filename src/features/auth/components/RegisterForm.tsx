@@ -1,173 +1,89 @@
 import React, { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { registerUser, RegisterData } from '../../../core/api/authApi';
-import { useAuth } from '@/core/hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { authApi } from '@/core/api/authApi';
 
 interface RegisterFormProps {
-  onSuccess?: () => void;
-  onError?: (error: string) => void;
+  onSuccess: () => void;
+  onError: (error: string) => void;
 }
 
-interface FormData {
-  name: string;
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-interface FormErrors {
-  name?: string;
-  username?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-  general?: string;
-}
-
-export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError }) => {
-  const [formData, setFormData] = useState<FormData>({
+export const RegisterForm: React.FC<RegisterFormProps> = ({
+  onSuccess,
+  onError,
+}) => {
+  const [formData, setFormData] = useState({
     name: '',
-    username: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Mutation pour l'inscription
-  const registerMutation = useMutation({
-    mutationFn: registerUser,
-    onSuccess: (data) => {
-      console.log('[RegisterForm] Inscription réussie', data);
-      login(data);
-      setErrors({});
-      setIsSubmitting(false);
-      console.log('[RegisterForm] Redirection vers /dashboard');
-      navigate('/dashboard');
-      onSuccess?.();
-    },
-    onError: (error: Error) => {
-      console.error('[RegisterForm] Erreur d\'inscription', error);
-      setErrors({ general: error.message });
-      setIsSubmitting(false);
-      onError?.(error.message);
-    },
-  });
-
-  // Validation des champs
-  const validateField = (name: keyof FormData, value: string): string | undefined => {
-    switch (name) {
-      case 'name':
-        if (!value) return 'Le nom est requis';
-        if (value.length < 2) return 'Le nom doit contenir au moins 2 caractères';
-        break;
-      case 'username':
-        if (!value) return 'Le pseudonyme est requis';
-        if (value.length < 3) return 'Le pseudonyme doit contenir au moins 3 caractères';
-        if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
-          return 'Le pseudonyme ne peut contenir que des lettres, chiffres, tirets et underscores';
-        }
-        break;
-      case 'email':
-        if (!value) return 'L\'email est requis';
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          return 'Format d\'email invalide';
-        }
-        break;
-      case 'password':
-        if (!value) return 'Le mot de passe est requis';
-        if (value.length < 6) {
-          return 'Le mot de passe doit contenir au moins 6 caractères';
-        }
-        break;
-      case 'confirmPassword':
-        if (!value) return 'La confirmation du mot de passe est requise';
-        if (value !== formData.password) {
-          return 'Les mots de passe ne correspondent pas';
-        }
-        break;
-    }
-    return undefined;
-  };
-
-  // Gestion des changements de champs
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Valider le champ en temps réel
-    const fieldError = validateField(name as keyof FormData, value);
-    setErrors(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: fieldError,
-      general: undefined, // Effacer l'erreur générale
+      [name]: value,
     }));
-
-    // Re-valider la confirmation du mot de passe si le mot de passe change
-    if (name === 'password' && formData.confirmPassword) {
-      const confirmError = validateField('confirmPassword', formData.confirmPassword);
-      setErrors(prev => ({
-        ...prev,
-        confirmPassword: confirmError,
-      }));
-    }
   };
 
-  // Gestion de la soumission
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      return 'Le nom est requis';
+    }
+    if (!formData.email.trim()) {
+      return "L'email est requis";
+    }
+    if (!formData.email.includes('@')) {
+      return "L'email doit être valide";
+    }
+    if (formData.password.length < 6) {
+      return 'Le mot de passe doit contenir au moins 6 caractères';
+    }
+    if (formData.password !== formData.confirmPassword) {
+      return 'Les mots de passe ne correspondent pas';
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    // Validation complète
-    const newErrors: FormErrors = {};
-    Object.keys(formData).forEach((key) => {
-      const fieldError = validateField(key as keyof FormData, formData[key as keyof FormData]);
-      if (fieldError) {
-        newErrors[key as keyof FormData] = fieldError;
-      }
-    });
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setIsSubmitting(false);
+    const validationError = validateForm();
+    if (validationError) {
+      onError(validationError);
       return;
     }
 
-    // Préparer les données pour l'API
-    const userData: RegisterData = {
-      name: formData.name,
-      username: formData.username,
-      email: formData.email,
-      password: formData.password,
-    };
-
-    // Timeout de sécurité (30 secondes)
-    const timeoutId = setTimeout(() => {
-      if (isSubmitting) {
-        setErrors({ general: 'Délai d\'attente dépassé. Vérifiez votre connexion.' });
-        setIsSubmitting(false);
-      }
-    }, 30000);
+    setIsLoading(true);
 
     try {
-      // Soumettre le formulaire
-      registerMutation.mutate(userData);
-    } catch (error) {
-      clearTimeout(timeoutId);
-      setErrors({ general: 'Erreur lors de la soumission du formulaire.' });
-      setIsSubmitting(false);
+      console.log("Tentative d'inscription...");
+
+      const result = await authApi.registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      console.log('Inscription réussie:', result);
+      onSuccess();
+    } catch (err) {
+      console.error("Erreur lors de l'inscription:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Erreur lors de l'inscription";
+      onError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Nom complet
         </label>
         <input
@@ -175,47 +91,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError }
           id="name"
           name="name"
           value={formData.name}
-          onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-occitan-orange focus:border-occitan-orange transition-colors duration-200 ${
-            errors.name ? 'border-red-500' : 'border-gray-300'
-          }`}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           placeholder="Votre nom complet"
-          required
-          aria-describedby={errors.name ? 'name-error' : undefined}
         />
-        {errors.name && (
-          <p id="name-error" className="mt-1 text-sm text-red-600">
-            {errors.name}
-          </p>
-        )}
       </div>
 
       <div>
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-          Pseudonyme
-        </label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={formData.username}
-          onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-occitan-orange focus:border-occitan-orange transition-colors duration-200 ${
-            errors.username ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="Votre pseudonyme"
-          required
-          aria-describedby={errors.username ? 'username-error' : undefined}
-        />
-        {errors.username && (
-          <p id="username-error" className="mt-1 text-sm text-red-600">
-            {errors.username}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Email
         </label>
         <input
@@ -223,23 +110,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError }
           id="email"
           name="email"
           value={formData.email}
-          onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-occitan-orange focus:border-occitan-orange transition-colors duration-200 ${
-            errors.email ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="votre@email.com"
+          onChange={handleChange}
           required
-          aria-describedby={errors.email ? 'email-error' : undefined}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          placeholder="votre@email.com"
         />
-        {errors.email && (
-          <p id="email-error" className="mt-1 text-sm text-red-600">
-            {errors.email}
-          </p>
-        )}
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Mot de passe
         </label>
         <input
@@ -247,23 +129,18 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError }
           id="password"
           name="password"
           value={formData.password}
-          onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-occitan-orange focus:border-occitan-orange transition-colors duration-200 ${
-            errors.password ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="Votre mot de passe"
+          onChange={handleChange}
           required
-          aria-describedby={errors.password ? 'password-error' : undefined}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          placeholder="Au moins 6 caractères"
         />
-        {errors.password && (
-          <p id="password-error" className="mt-1 text-sm text-red-600">
-            {errors.password}
-          </p>
-        )}
       </div>
 
       <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="confirmPassword"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Confirmer le mot de passe
         </label>
         <input
@@ -271,77 +148,20 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, onError }
           id="confirmPassword"
           name="confirmPassword"
           value={formData.confirmPassword}
-          onChange={handleInputChange}
-          className={`w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-occitan-orange focus:border-occitan-orange transition-colors duration-200 ${
-            errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="Confirmez votre mot de passe"
+          onChange={handleChange}
           required
-          aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+          placeholder="Répétez votre mot de passe"
         />
-        {errors.confirmPassword && (
-          <p id="confirmPassword-error" className="mt-1 text-sm text-red-600">
-            {errors.confirmPassword}
-          </p>
-        )}
       </div>
-
-      {errors.general && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-600">{errors.general}</p>
-        </div>
-      )}
 
       <button
         type="submit"
-        disabled={isSubmitting}
-        className={`
-          w-full flex justify-center py-3 px-4 
-          border border-transparent rounded-lg shadow-lg 
-          text-sm font-semibold text-white 
-          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange 
-          transition-all duration-300 transform hover:scale-105
-          ${isSubmitting
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-gradient-to-r from-occitan-red to-occitan-orange hover:from-occitan-orange hover:to-occitan-red'
-          }
-        `}
-        aria-describedby={isSubmitting ? 'submitting-status' : undefined}
+        disabled={isLoading}
+        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? (
-          <>
-            <svg
-              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-            Création en cours...
-          </>
-        ) : (
-          'Créer mon compte'
-        )}
+        {isLoading ? 'Création du compte...' : 'Créer mon compte'}
       </button>
-
-      {isSubmitting && (
-        <div id="submitting-status" className="sr-only">
-          Création de compte en cours...
-        </div>
-      )}
     </form>
   );
-}; 
+};

@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => ({
       '@features': resolve(__dirname, 'src/features'),
       '@components': resolve(__dirname, 'src/components'),
       '@layouts': resolve(__dirname, 'src/layouts'),
+      '@dev-only': resolve(__dirname, 'src/dev-only'),
     },
   },
   server: {
@@ -33,8 +34,8 @@ export default defineConfig(({ mode }) => ({
           query: ['@tanstack/react-query'],
           state: ['zustand'],
           utils: ['axios'],
-        }
-      }
+        },
+      },
     },
     // Analyse du bundle en mode analyze
     ...(mode === 'analyze' && {
@@ -42,11 +43,11 @@ export default defineConfig(({ mode }) => ({
         output: {
           manualChunks: (id) => {
             if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'react-vendor'
-              if (id.includes('@tanstack')) return 'tanstack'
-              if (id.includes('zustand')) return 'zustand'
-              if (id.includes('axios')) return 'axios'
-              return 'vendor'
+              if (id.includes('react')) return 'react-vendor';
+              if (id.includes('@tanstack')) return 'tanstack';
+              if (id.includes('zustand')) return 'zustand';
+              if (id.includes('axios')) return 'axios';
+              return 'vendor';
             }
           },
         },
@@ -67,6 +68,7 @@ export default defineConfig(({ mode }) => ({
       exclude: [
         'node_modules/',
         'src/core/test/',
+        'src/dev-only/', // Exclure le dossier dev-only des tests
         '**/*.d.ts',
         '**/*.config.*',
         '**/*.stories.*',
@@ -76,6 +78,21 @@ export default defineConfig(({ mode }) => ({
     },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', '@tanstack/react-query', '@tanstack/react-router'],
+    include: [
+      'react',
+      'react-dom',
+      '@tanstack/react-query',
+      '@tanstack/react-router',
+    ],
   },
-}))
+  // Exclure le dossier dev-only en production
+  ...(mode === 'production' && {
+    build: {
+      rollupOptions: {
+        external: (id) => {
+          return id.includes('src/dev-only/');
+        },
+      },
+    },
+  }),
+}));

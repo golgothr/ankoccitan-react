@@ -1,5 +1,4 @@
-import React, { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
+import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 
@@ -17,28 +16,21 @@ const createTestQueryClient = () =>
     },
   });
 
-// Router pour les tests - React Router v6
-const createTestRouter = () => {
-  return null; // React Router v6 n'a pas besoin de router instance
-};
-
-// Interface pour les options de test
 interface TestWrapperOptions {
   withRouter?: boolean;
   withQueryClient?: boolean;
 }
 
-// Composant TestWrapper
 interface TestWrapperProps {
   children: React.ReactNode;
   options?: TestWrapperOptions;
 }
 
-const TestWrapper: React.FC<TestWrapperProps> = ({ children, options = {} }) => {
-  const {
-    withRouter = false,
-    withQueryClient = true,
-  } = options;
+const TestWrapper: React.FC<TestWrapperProps> = ({
+  children,
+  options = {},
+}) => {
+  const { withRouter = false, withQueryClient = true } = options;
 
   // Wrapper avec QueryClient
   const withQueryClientWrapper = (children: React.ReactNode) => {
@@ -46,9 +38,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({ children, options = {} }) => 
 
     const queryClient = createTestQueryClient();
     return (
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
   };
 
@@ -56,42 +46,10 @@ const TestWrapper: React.FC<TestWrapperProps> = ({ children, options = {} }) => 
   const withRouterWrapper = (children: React.ReactNode) => {
     if (!withRouter) return children;
 
-    return (
-      <BrowserRouter>
-        {children}
-      </BrowserRouter>
-    );
+    return <BrowserRouter>{children}</BrowserRouter>;
   };
 
   return withRouterWrapper(withQueryClientWrapper(children));
-};
-
-// Fonction de rendu personnalisée pour les tests
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
-  wrapperProps?: TestWrapperOptions;
-}
-
-const customRender = (
-  ui: ReactElement,
-  options: CustomRenderOptions = {}
-) => {
-  const { wrapperProps, ...renderOptions } = options;
-
-  const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <TestWrapper options={wrapperProps}>{children}</TestWrapper>
-  );
-
-  return render(ui, { wrapper: Wrapper, ...renderOptions });
-};
-
-// Hooks utilitaires pour les tests
-// À implémenter quand les stores seront créés
-export const useTestAuth = () => {
-  return { isAuthenticated: false, user: null, login: () => {}, logout: () => {} };
-};
-
-export const useTestDeck = () => {
-  return { decks: [], isLoading: false, fetchDecks: () => {}, createDeck: () => {} };
 };
 
 // Mock des APIs pour les tests
@@ -125,8 +83,6 @@ export const waitForElementToBeRemoved = async (element: HTMLElement) => {
   });
 };
 
-// Re-exporter les utilitaires de testing-library
-export * from '@testing-library/react';
-export { customRender as render };
+// Export des fonctions de test avec le wrapper
+export { render, screen, fireEvent, waitFor } from '@testing-library/react';
 export { TestWrapper };
-export type { TestWrapperOptions, CustomRenderOptions }; 

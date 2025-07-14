@@ -1,8 +1,8 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { env } from '../config/env';
 
-// Configuration de base
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// Configuration de l'API client
+export const API_BASE_URL = env.API_URL;
 
 // Création de l'instance Axios
 export const apiClient: AxiosInstance = axios.create({

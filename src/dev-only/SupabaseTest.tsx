@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/core/lib/supabase';
+import { supabase } from '../core/lib/supabase';
+import { env } from '../core/config/env';
 
 export const SupabaseTest: React.FC = () => {
   const [status, setStatus] = useState<string>('Vérification...');
@@ -12,29 +13,26 @@ export const SupabaseTest: React.FC = () => {
   const checkSupabaseConfig = async () => {
     try {
       setStatus('Vérification de la configuration...');
-      
-      // Vérifier les variables d'environnement
-      const url = import.meta.env.VITE_SUPABASE_URL;
-      const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      
-      if (!url || !key) {
-        throw new Error('Variables d\'environnement Supabase manquantes');
+
+      // Vérifier les variables d'environnement via le module centralisé
+      if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) {
+        throw new Error("Variables d'environnement Supabase manquantes");
       }
-      
+
       setStatus('Test de connexion à Supabase...');
-      
+
       // Test de connexion simple
-      const { data, error } = await supabase.from('users').select('count').limit(1);
-      
+      const { error } = await supabase.from('users').select('count').limit(1);
+
       if (error) {
         throw new Error(`Erreur de connexion: ${error.message}`);
       }
-      
+
       setStatus('✅ Configuration Supabase OK');
       setError(null);
-      
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erreur inconnue';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Erreur inconnue';
       setStatus('❌ Configuration Supabase échouée');
       setError(errorMessage);
     }
@@ -48,10 +46,11 @@ export const SupabaseTest: React.FC = () => {
         <div className="mt-2 p-2 bg-red-100 border border-red-300 rounded">
           <p className="text-red-700 text-sm">{error}</p>
           <p className="text-xs mt-1">
-            Créez un fichier .env avec VITE_SUPABASE_URL et VITE_SUPABASE_ANON_KEY
+            Créez un fichier .env avec VITE_SUPABASE_URL et
+            VITE_SUPABASE_ANON_KEY
           </p>
         </div>
       )}
     </div>
   );
-}; 
+};
