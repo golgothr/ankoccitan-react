@@ -17,6 +17,7 @@ import { PrivacyPage } from './features/legal/PrivacyPage';
 import { NotFoundPage } from './features/common/NotFoundPage';
 import { useAuth } from './core/hooks/useAuth';
 import { AppLayout } from './AppLayout';
+import { SettingsPage } from './features/settings/SettingsPage';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { isLoggedIn } = useAuth();
@@ -66,6 +67,14 @@ export function AppRouter() {
             element={
               <RequireAuth>
                 <ImportPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <RequireAuth>
+                <SettingsPage />
               </RequireAuth>
             }
           />

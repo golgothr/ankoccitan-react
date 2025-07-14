@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Toast } from '../../../../components/Toast';
 import { CardFormData } from '../../types/card.types';
+import { ImageSearchModal } from '../ImageSearchModal';
+import { PexelsImage } from '../../../../core/api/pexelsApi';
 
 interface ImageToOccitanCardProps {
   onCardCreated: (card: CardFormData) => Promise<void>;
@@ -17,17 +19,10 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
     occitanTranslation: '',
   });
 
-  const [isSearchingImages, setIsSearchingImages] = useState(false);
   const [isTranslating, setIsTranslating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
-  // Simuler l'API de recherche d'images (à remplacer par l'API réelle)
-  const searchImages = async (query: string): Promise<string> => {
-    // TODO: Intégrer l'API Pexels
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simule un délai
-    return `https://example.com/images/${encodeURIComponent(query)}.jpg`;
-  };
+  const [isImageSearchModalOpen, setIsImageSearchModalOpen] = useState(false);
 
   // Simuler l'API de traduction (à remplacer par l'API réelle)
   const translateToOccitan = async (text: string): Promise<string> => {
@@ -36,27 +31,18 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
     return `Traduction de "${text}" en occitan`;
   };
 
-  const handleSearchImages = async () => {
-    if (!formData.imageQuery.trim()) {
-      setError('Veuillez entrer un terme de recherche');
-      return;
-    }
+  const handleOpenImageSearch = () => {
+    setIsImageSearchModalOpen(true);
+  };
 
-    setIsSearchingImages(true);
-    setError(null);
-    try {
-      const imageUrl = await searchImages(formData.imageQuery);
-      setFormData((prev) => ({
-        ...prev,
-        selectedImage: imageUrl,
-        imageAlt: formData.imageQuery,
-      }));
-      setSuccess('Image trouvée !');
-    } catch {
-      setError("Erreur lors de la recherche d'image");
-    } finally {
-      setIsSearchingImages(false);
-    }
+  const handleImageSelected = (image: PexelsImage) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedImage: image.src.medium,
+      imageAlt: image.alt || `Image de ${image.photographer}`,
+      imageQuery: image.alt || 'Image sélectionnée',
+    }));
+    setSuccess('Image sélectionnée !');
   };
 
   const handleTranslate = async () => {
@@ -151,53 +137,31 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
               }
               className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-occitan-orange focus:border-occitan-orange"
               placeholder="Ex: chat, maison, voiture..."
+              readOnly
             />
             <button
-              onClick={handleSearchImages}
-              disabled={isSearchingImages || !formData.imageQuery.trim()}
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              onClick={handleOpenImageSearch}
+              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
             >
-              {isSearchingImages ? (
-                <>
-                  <svg
-                    className="animate-spin h-4 w-4 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                </>
-              ) : (
-                <>
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </>
-              )}
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
             </button>
           </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Cliquez sur le bouton de recherche pour ouvrir la galerie d'images
+            Pexels
+          </p>
         </div>
 
         {/* Image sélectionnée */}
@@ -224,6 +188,7 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
                       ...prev,
                       selectedImage: '',
                       imageAlt: '',
+                      imageQuery: '',
                     }))
                   }
                   className="text-xs text-red-600 hover:text-red-800"
@@ -361,19 +326,18 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
         </div>
       </div>
 
+      {/* Modal de recherche d'images */}
+      <ImageSearchModal
+        isOpen={isImageSearchModalOpen}
+        onClose={() => setIsImageSearchModalOpen(false)}
+        onSelectImage={handleImageSelected}
+        searchQuery={formData.imageQuery}
+      />
+
       {error && (
-        <Toast
-          type="error"
-          message={error}
-          onClose={() => setError(null)}
-        />
+        <Toast type="error" message={error} onClose={() => setError(null)} />
       )}
-      {success && (
-        <Toast
-          message={success}
-          onClose={() => setSuccess(null)}
-        />
-      )}
+      {success && <Toast message={success} onClose={() => setSuccess(null)} />}
     </div>
   );
 };
