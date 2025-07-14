@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { CardFormData, Card, isCardValid } from '../types/card.types';
+import { createCard } from '../../../core/api/supabaseCardsApi';
 
-// À remplacer par ton vrai client/API Supabase
+// Enregistre une carte via l'API Supabase
 async function saveCardToSupabase(
   card: CardFormData,
   deckId: string
 ): Promise<Card> {
-  // Simule un appel API
-  return {
-    id: Math.random().toString(36).slice(2),
+  const cardRow = await createCard({
     deck_id: deckId,
     card_type: card.cardType,
     front_content: card.frontContent,
@@ -18,9 +17,9 @@ async function saveCardToSupabase(
     image_url: card.imageUrl,
     api_metadata: card.metadata,
     position: 0,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
+  });
+
+  return cardRow as Card;
 }
 
 type SaveMode = 'immediate' | 'batch';
