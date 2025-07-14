@@ -138,16 +138,16 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
     );
   };
 
-  if (isLoading && !currentApiKey) {
-    return (
+  const loadingIndicator =
+    isLoading && !currentApiKey ? (
       <div className="flex justify-center py-4">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
       </div>
-    );
-  }
+    ) : null;
 
   return (
     <div className="bg-white border rounded-lg p-6">
+      {loadingIndicator}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900">Clé API Pexels</h3>
         <div className="flex items-center space-x-2">
@@ -169,6 +169,12 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
           )}
         </div>
       </div>
+      {currentApiKey && !isEditing && (
+        <p className="mb-4 text-sm text-gray-500">
+          Une clé est déjà enregistrée. Cliquez sur{' '}
+          <span className="font-medium">Modifier</span> pour la mettre à jour.
+        </p>
+      )}
 
       {currentApiKey && !isEditing ? (
         <div className="space-y-3">
