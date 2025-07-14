@@ -50,6 +50,7 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
       await settingsApi.upsertApiKey('pexels', apiKey.trim());
       await loadCurrentApiKey(); // Recharger pour avoir les données mises à jour
       setIsEditing(false);
+      setShowApiKey(false);
       onSuccess?.(
         currentApiKey
           ? 'Clé API mise à jour avec succès'
@@ -80,6 +81,7 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
       setCurrentApiKey(null);
       setApiKey('');
       setIsEditing(false);
+      setShowApiKey(false);
       onSuccess?.('Clé API supprimée avec succès');
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
@@ -92,6 +94,10 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
   const handleEdit = () => {
     setIsEditing(true);
     setShowApiKey(true);
+    // S'assurer que la clé complète est affichée dans le champ
+    if (currentApiKey) {
+      setApiKey(currentApiKey.api_key);
+    }
   };
 
   const handleCancel = () => {
@@ -168,11 +174,19 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded border">
             <span className="text-sm text-gray-600">Clé API:</span>
-            <span className="font-mono text-sm">
-              {showApiKey
-                ? currentApiKey.api_key
-                : maskApiKey(currentApiKey.api_key)}
-            </span>
+            <div className="flex items-center space-x-2">
+              <span className="font-mono text-sm">
+                {showApiKey
+                  ? currentApiKey.api_key
+                  : maskApiKey(currentApiKey.api_key)}
+              </span>
+              <button
+                onClick={() => setShowApiKey(!showApiKey)}
+                className="text-xs text-blue-600 hover:text-blue-800"
+              >
+                {showApiKey ? 'Masquer' : 'Afficher'}
+              </button>
+            </div>
           </div>
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded border">
             <span className="text-sm text-gray-600">Statut:</span>
@@ -216,24 +230,33 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
             </label>
             <input
               id="pexels-api-key"
-              type="text"
+              type={showApiKey ? 'text' : 'password'}
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
               placeholder="Entrez votre clé API Pexels"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               disabled={isLoading}
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Obtenez votre clé API gratuite sur{' '}
-              <a
-                href="https://www.pexels.com/api/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-orange-600 hover:text-orange-700 underline"
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-xs text-gray-500">
+                Obtenez votre clé API gratuite sur{' '}
+                <a
+                  href="https://www.pexels.com/api/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-600 hover:text-orange-700 underline"
+                >
+                  pexels.com/api
+                </a>
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowApiKey(!showApiKey)}
+                className="text-xs text-blue-600 hover:text-blue-800"
               >
-                pexels.com/api
-              </a>
-            </p>
+                {showApiKey ? 'Masquer' : 'Afficher'}
+              </button>
+            </div>
           </div>
 
           <div className="flex space-x-3">

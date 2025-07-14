@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Toast } from '../../../../components/Toast';
 import { CardFormData } from '../../types/card.types';
-import { ImageSearchModal } from '../ImageSearchModal';
+import { ImageSearchButton } from '../ImageSearchButton';
 import { PexelsImage } from '../../../../core/api/pexelsApi';
 
 interface ImageToOccitanCardProps {
@@ -22,17 +22,12 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
   const [isTranslating, setIsTranslating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [isImageSearchModalOpen, setIsImageSearchModalOpen] = useState(false);
 
   // Simuler l'API de traduction (à remplacer par l'API réelle)
   const translateToOccitan = async (text: string): Promise<string> => {
     // TODO: Intégrer l'API Revirada
     await new Promise((resolve) => setTimeout(resolve, 800)); // Simule un délai
     return `Traduction de "${text}" en occitan`;
-  };
-
-  const handleOpenImageSearch = () => {
-    setIsImageSearchModalOpen(true);
   };
 
   const handleImageSelected = (image: PexelsImage) => {
@@ -65,32 +60,36 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (
-      !formData.selectedImage ||
-      !formData.frenchDescription.trim() ||
-      !formData.occitanTranslation.trim()
-    ) {
-      setError('Veuillez sélectionner une image et remplir les descriptions');
+    if (!formData.selectedImage) {
+      setError('Veuillez sélectionner une image');
       return;
     }
 
-    setError(null);
+    if (!formData.frenchDescription.trim()) {
+      setError('Veuillez entrer une description en français');
+      return;
+    }
+
+    if (!formData.occitanTranslation.trim()) {
+      setError('Veuillez entrer une traduction en occitan');
+      return;
+    }
+
     try {
       const cardData: CardFormData = {
         cardType: 'pexels',
-        frontContent: formData.selectedImage, // L'image sera affichée au recto
-        backContent: formData.occitanTranslation, // La traduction au verso
+        frontContent: formData.frenchDescription,
+        backContent: formData.occitanTranslation,
         imageUrl: formData.selectedImage,
         metadata: {
-          imageQuery: formData.imageQuery,
           imageAlt: formData.imageAlt,
-          frenchDescription: formData.frenchDescription,
-          translationSource: 'revirada',
+          source: 'pexels',
+          photographer: formData.imageAlt.split(' de ')[1] || 'Inconnu',
+          tags: ['image', 'occitan'],
         },
       };
 
       await onCardCreated(cardData);
-      setSuccess('Carte ajoutée au deck !');
 
       // Réinitialiser le formulaire
       setFormData({
@@ -100,8 +99,11 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
         frenchDescription: '',
         occitanTranslation: '',
       });
-    } catch {
-      setError("Erreur lors de l'ajout de la carte");
+
+      setSuccess('Carte ajoutée au deck avec succès !');
+    } catch (error) {
+      console.error('Erreur lors de la création de la carte:', error);
+      setError('Erreur lors de la création de la carte');
     }
   };
 
@@ -121,42 +123,31 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
       <div className="space-y-4">
         {/* Recherche d'image */}
         <div>
-          <label
-            htmlFor="image-query"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Rechercher une image *
           </label>
-          <div className="flex space-x-2">
-            <input
-              id="image-query"
-              type="text"
-              value={formData.imageQuery}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, imageQuery: e.target.value }))
-              }
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-occitan-orange focus:border-occitan-orange"
-              placeholder="Ex: chat, maison, voiture..."
-              readOnly
+          <div className="flex items-center space-x-3">
+            <div className="flex-1">
+              <input
+                type="text"
+                value={formData.imageQuery}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    imageQuery: e.target.value,
+                  }))
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-occitan-orange focus:border-occitan-orange"
+                placeholder="Ex: chat, maison, voiture..."
+                readOnly
+              />
+            </div>
+            <ImageSearchButton
+              onImageSelected={handleImageSelected}
+              placeholder="Rechercher"
+              variant="primary"
+              size="md"
             />
-            <button
-              onClick={handleOpenImageSearch}
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200"
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </button>
           </div>
           <p className="text-xs text-gray-500 mt-1">
             Cliquez sur le bouton de recherche pour ouvrir la galerie d'images
@@ -200,7 +191,7 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
           </div>
         )}
 
-        {/* Description française */}
+        {/* Description en français */}
         <div>
           <label
             htmlFor="french-description"
@@ -218,60 +209,18 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
               }))
             }
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-occitan-orange focus:border-occitan-orange"
-            placeholder="Décrivez ce qui est visible sur l'image..."
-            rows={2}
+            placeholder="Décrivez l'image en français..."
+            rows={3}
           />
-        </div>
-
-        {/* Bouton de traduction */}
-        <div className="flex justify-center">
-          <button
-            onClick={handleTranslate}
-            disabled={isTranslating || !formData.frenchDescription.trim()}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-occitan-orange hover:bg-occitan-red focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-          >
-            {isTranslating ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Traduction en cours...
-              </>
-            ) : (
-              <>
-                <svg
-                  className="-ml-1 mr-2 h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
-                  />
-                </svg>
-                Traduire
-              </>
-            )}
-          </button>
+          <div className="flex justify-end mt-2">
+            <button
+              onClick={handleTranslate}
+              disabled={isTranslating || !formData.frenchDescription.trim()}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            >
+              {isTranslating ? 'Traduction...' : 'Traduire en occitan'}
+            </button>
+          </div>
         </div>
 
         {/* Traduction occitan */}
@@ -325,14 +274,6 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Modal de recherche d'images */}
-      <ImageSearchModal
-        isOpen={isImageSearchModalOpen}
-        onClose={() => setIsImageSearchModalOpen(false)}
-        onSelectImage={handleImageSelected}
-        searchQuery={formData.imageQuery}
-      />
 
       {error && (
         <Toast type="error" message={error} onClose={() => setError(null)} />
