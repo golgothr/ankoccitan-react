@@ -4,6 +4,10 @@
 
 Base de projet React TypeScript pour une **webapp collaborative et évolutive**, avec une **architecture modulaire feature-first** et une structure claire, facilement maintenable.
 
+## 🚀 Installation
+
+Exécutez `npm install` pour installer l'ensemble des dépendances nécessaires, y compris `react-window` utilisé par l'application.
+
 ## 🏗️ Architecture
 
 ### Structure du projet
