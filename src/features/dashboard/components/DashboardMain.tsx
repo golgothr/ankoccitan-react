@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { fetchDeckStats } from '@/core/api/supabaseDecksApi';
 import { fetchRandomCard } from '@/core/api/supabaseCardsApi';
 import { logger } from '@/core/utils/logger';
@@ -11,6 +11,20 @@ export function DashboardMain() {
   const [deckCount, setDeckCount] = useState(0);
   const [cardCount, setCardCount] = useState(0);
   const [randomCard, setRandomCard] = useState<CardRow | null>(null);
+
+  // Calculer les statistiques du dashboard avec useMemo
+  const dashboardStats = useMemo(() => {
+    return {
+      totalCards: cardCount,
+      totalDecks: deckCount,
+      averageCardsPerDeck:
+        deckCount > 0 ? Math.round(cardCount / deckCount) : 0,
+      hasData: cardCount > 0 || deckCount > 0,
+    };
+  }, [cardCount, deckCount]);
+
+  // Utiliser les stats calculées
+  const { totalCards, totalDecks } = dashboardStats;
 
   useEffect(() => {
     const loadData = async () => {
@@ -55,14 +69,14 @@ export function DashboardMain() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-md flex flex-col items-center justify-center">
             <p className="text-sm text-gray-600 mb-2">Total de decks</p>
-            <p className="text-4xl font-bold text-gray-900">{deckCount}</p>
+            <p className="text-4xl font-bold text-gray-900">{totalDecks}</p>
             <button className="mt-4 text-sm text-occitan-red hover:text-occitan-orange">
               Voir tous mes decks
             </button>
           </div>
           <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-md flex flex-col items-center justify-center">
             <p className="text-sm text-gray-600 mb-2">Total de cartes</p>
-            <p className="text-4xl font-bold text-gray-900">{cardCount}</p>
+            <p className="text-4xl font-bold text-gray-900">{totalCards}</p>
             <button className="mt-4 text-sm text-occitan-red hover:text-occitan-orange">
               Créer une nouvelle carte
             </button>

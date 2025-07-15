@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDecks } from './hooks/useDecks';
 import { useAuth } from '../../core/hooks/useAuth';
@@ -27,38 +27,41 @@ export function DecksPage() {
   );
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const handleEdit = (deck: Deck) => {
+  const handleEdit = useCallback((deck: Deck) => {
     // ✅ Naviguer vers la page d'édition (à implémenter plus tard)
     logger.log('Éditer le deck:', deck.name);
     // TODO: Naviguer vers /decks/:id/edit
     // navigate(`/decks/${deck.id}/edit`);
-  };
+  }, []);
 
-  const handleDuplicate = async (deck: Deck) => {
-    try {
-      // ✅ Créer une copie du deck
-      const duplicatedDeck = {
-        name: `${deck.name} (copie)`,
-        description: deck.description,
-        category: deck.category,
-        tags: deck.tags,
-        isPublic: false, // Les copies sont privées par défaut
-        cardCount: 0, // Pas de cartes dans la copie
-        userId: user?.id || '',
-      };
+  const handleDuplicate = useCallback(
+    async (deck: Deck) => {
+      try {
+        // ✅ Créer une copie du deck
+        const duplicatedDeck = {
+          name: `${deck.name} (copie)`,
+          description: deck.description,
+          category: deck.category,
+          tags: deck.tags,
+          isPublic: false, // Les copies sont privées par défaut
+          cardCount: 0, // Pas de cartes dans la copie
+          userId: user?.id || '',
+        };
 
-      await addDeck(duplicatedDeck);
-      logger.log('Deck dupliqué avec succès');
-    } catch (error) {
-      logger.error('Erreur lors de la duplication du deck:', error);
-      // L'erreur sera gérée par la modal
-      throw error;
-    }
-  };
+        await addDeck(duplicatedDeck);
+        logger.log('Deck dupliqué avec succès');
+      } catch (error) {
+        logger.error('Erreur lors de la duplication du deck:', error);
+        // L'erreur sera gérée par la modal
+        throw error;
+      }
+    },
+    [addDeck, user?.id]
+  );
 
-  const handleDelete = (deck: Deck) => {
+  const handleDelete = useCallback((deck: Deck) => {
     setShowDeleteConfirm(deck.id);
-  };
+  }, []);
 
   const confirmDelete = () => {
     if (showDeleteConfirm) {
