@@ -1,6 +1,29 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { env } from '../config/env';
 
+// ------- Rate Limiter Configuration -------
+const RATE_LIMIT = 5;
+const RATE_INTERVAL = 1000; // 5 requêtes par seconde
+let tokens = RATE_LIMIT;
+const queue: Array<() => void> = [];
+
+setInterval(() => {
+  tokens = RATE_LIMIT;
+  while (tokens > 0 && queue.length > 0) {
+    tokens--;
+    const next = queue.shift();
+    if (next) next();
+  }
+}, RATE_INTERVAL);
+
+function acquireToken(): Promise<void> {
+  if (tokens > 0) {
+    tokens--;
+    return Promise.resolve();
+  }
+  return new Promise((resolve) => queue.push(resolve));
+}
+
 // Configuration de l'API client
 export const API_BASE_URL = env.API_URL;
 
@@ -10,16 +33,22 @@ export const apiClient: AxiosInstance = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
+    // En-têtes de sécurité pour toutes les requêtes
+    'X-Frame-Options': 'DENY',
+    'X-Content-Type-Options': 'nosniff',
   },
 });
 
-// Intercepteur pour ajouter le token d'authentification
+// Intercepteur pour ajouter le token d'authentification et limiter le taux de requêtes
 apiClient.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    await acquireToken();
     const token = localStorage.getItem('auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    config.headers['X-Frame-Options'] = 'DENY';
+    config.headers['X-Content-Type-Options'] = 'nosniff';
     return config;
   },
   (error) => {
