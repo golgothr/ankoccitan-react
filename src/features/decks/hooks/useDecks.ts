@@ -11,6 +11,7 @@ import {
   updateDeck as updateDeckApi,
   deleteDeck as deleteDeckApi,
 } from '../../../core/api/supabaseDecksApi';
+import { logger } from '@/core/utils/logger';
 import type { DeckRow } from '../../../core/lib/supabase';
 
 // Mappings pour convertir entre catégories et niveaux de difficulté
@@ -123,7 +124,7 @@ export function useDecks() {
         const convertedDecks = deckRows.map(convertDeckRowToDeck);
         setDecks(convertedDecks);
       } catch (err) {
-        console.error('Erreur lors du chargement des decks:', err);
+        logger.error('Erreur lors du chargement des decks:', err);
         setError(err instanceof Error ? err.message : 'Erreur inconnue');
         // Fallback vers les données mockées en cas d'erreur
         setDecks(MOCK_DECKS);
@@ -162,7 +163,7 @@ export function useDecks() {
       const newDeck = convertDeckRowToDeck(newDeckRow);
       setDecks((prev) => [newDeck, ...prev]);
     } catch (err) {
-      console.error('Erreur lors de la création du deck:', err);
+      logger.error('Erreur lors de la création du deck:', err);
       throw err;
     }
   };
@@ -187,7 +188,7 @@ export function useDecks() {
         )
       );
     } catch (err) {
-      console.error('Erreur lors de la mise à jour du deck:', err);
+      logger.error('Erreur lors de la mise à jour du deck:', err);
       throw err;
     }
   };
@@ -197,7 +198,7 @@ export function useDecks() {
       await deleteDeckApi(id);
       setDecks((prev) => prev.filter((deck) => deck.id !== id));
     } catch (err) {
-      console.error('Erreur lors de la suppression du deck:', err);
+      logger.error('Erreur lors de la suppression du deck:', err);
       throw err;
     }
   };

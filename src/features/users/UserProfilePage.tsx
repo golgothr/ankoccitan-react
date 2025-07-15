@@ -1,4 +1,5 @@
 import { useAuth } from '@/core/hooks/useAuth';
+import { logger } from '@/core/utils/logger';
 
 export function UserProfilePage() {
   const { user, logout } = useAuth();
@@ -51,11 +52,11 @@ export function UserProfilePage() {
             <button
               onClick={async () => {
                 try {
-                  console.log('[UserProfilePage] Déconnexion en cours...');
+                  logger.log('[UserProfilePage] Déconnexion en cours...');
                   await logout();
                   // La redirection est gérée dans la fonction logout
                 } catch (error) {
-                  console.error(
+                  logger.error(
                     '[UserProfilePage] Erreur lors de la déconnexion:',
                     error
                   );

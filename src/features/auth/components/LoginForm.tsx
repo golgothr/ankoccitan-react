@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { authApi, LoginCredentials } from '@/core/api';
 import { useAuth } from '@/core/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { logger } from '@/core/utils/logger';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -34,16 +35,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
   const loginMutation = useMutation({
     mutationFn: authApi.loginUser,
     onSuccess: (data) => {
-      console.log('[LoginForm] Connexion réussie', data);
+      logger.log('[LoginForm] Connexion réussie', data);
       login(data);
       setErrors({});
       setIsSubmitting(false);
-      console.log('[LoginForm] Redirection vers /dashboard');
+      logger.log('[LoginForm] Redirection vers /dashboard');
       navigate('/dashboard');
       onSuccess?.();
     },
     onError: (error: Error) => {
-      console.error('[LoginForm] Erreur de connexion', error);
+      logger.error('[LoginForm] Erreur de connexion', error);
       setErrors({ general: error.message });
       setIsSubmitting(false);
       onError?.(error.message);

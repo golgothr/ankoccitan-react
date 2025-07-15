@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { settingsApi, ApiKey } from '../../../core/api/settingsApi';
 import { pexelsApi } from '../../../core/api/pexelsApi';
+import { logger } from '@/core/utils/logger';
 
 interface PexelsApiKeyFormProps {
   onSuccess?: (message: string) => void;
@@ -26,7 +27,7 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
         setApiKey(key.api_key);
       }
     } catch (error) {
-      console.error('Erreur lors du chargement de la clé API:', error);
+      logger.error('Erreur lors du chargement de la clé API:', error);
       onError?.('Erreur lors du chargement de la clé API');
     } finally {
       setIsLoading(false);
@@ -57,7 +58,7 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
           : 'Clé API ajoutée avec succès'
       );
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
+      logger.error('Erreur lors de la sauvegarde:', error);
       onError?.('Erreur lors de la sauvegarde de la clé API');
     } finally {
       setIsLoading(false);
@@ -84,7 +85,7 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
       setShowApiKey(false);
       onSuccess?.('Clé API supprimée avec succès');
     } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
+      logger.error('Erreur lors de la suppression:', error);
       onError?.('Erreur lors de la suppression de la clé API');
     } finally {
       setIsLoading(false);
@@ -122,7 +123,7 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
         onError?.('Clé API Pexels invalide ou erreur de connexion');
       }
     } catch (error) {
-      console.error('Erreur lors du test de la clé API:', error);
+      logger.error('Erreur lors du test de la clé API:', error);
       onError?.('Erreur lors du test de la clé API');
     } finally {
       setIsLoading(false);

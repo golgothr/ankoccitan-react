@@ -1,4 +1,5 @@
 import { supabase } from '@/core/lib/supabase';
+import { logger } from '@/core/utils/logger';
 import type { DeckRow } from '@/core/lib/supabase';
 
 export async function fetchUserDecks(): Promise<DeckRow[]> {
@@ -13,7 +14,7 @@ export async function fetchUserDecks(): Promise<DeckRow[]> {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Erreur lors de la récupération des decks:', error);
+    logger.error('Erreur lors de la récupération des decks:', error);
     throw error;
   }
 
@@ -27,7 +28,7 @@ export async function fetchDeckStats() {
     .select('*', { count: 'exact', head: true });
 
   if (deckError) {
-    console.error('Erreur lors du comptage des decks:', deckError);
+    logger.error('Erreur lors du comptage des decks:', deckError);
     throw deckError;
   }
 
@@ -37,7 +38,7 @@ export async function fetchDeckStats() {
     .select('*', { count: 'exact', head: true });
 
   if (cardError) {
-    console.error('Erreur lors du comptage des cartes:', cardError);
+    logger.error('Erreur lors du comptage des cartes:', cardError);
     throw cardError;
   }
 
@@ -61,7 +62,7 @@ export async function fetchPublicDecks() {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Erreur lors de la récupération des decks publics:', error);
+    logger.error('Erreur lors de la récupération des decks publics:', error);
     throw error;
   }
 
@@ -82,7 +83,7 @@ export async function createDeck(deckData: {
     .single();
 
   if (error) {
-    console.error('Erreur lors de la création du deck:', error);
+    logger.error('Erreur lors de la création du deck:', error);
     throw error;
   }
 
@@ -101,7 +102,7 @@ export async function updateDeck(
     .single();
 
   if (error) {
-    console.error('Erreur lors de la mise à jour du deck:', error);
+    logger.error('Erreur lors de la mise à jour du deck:', error);
     throw error;
   }
 
@@ -112,7 +113,7 @@ export async function deleteDeck(id: string): Promise<void> {
   const { error } = await supabase.from('decks').delete().eq('id', id);
 
   if (error) {
-    console.error('Erreur lors de la suppression du deck:', error);
+    logger.error('Erreur lors de la suppression du deck:', error);
     throw error;
   }
 }

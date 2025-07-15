@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase, User } from '@/core/lib/supabase';
 import { clearAuthState } from '@/core/utils/authUtils';
+import { logger } from '@/core/utils/logger';
 
 interface AuthState {
   isLoggedIn: boolean;
@@ -53,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       }
     } catch (error) {
-      console.error(
+      logger.error(
         "Erreur lors de la vérification du statut d'authentification:",
         error
       );
@@ -72,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(
+      logger.log(
         "[useAuth] Événement d'authentification:",
         event,
         session?.user?.id
@@ -92,14 +93,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
             token: session.access_token,
           });
         } catch (error) {
-          console.error('Erreur lors de la récupération du profil:', error);
+          logger.error('Erreur lors de la récupération du profil:', error);
           setAuthState({ isLoggedIn: false, user: null, token: null });
         }
       } else if (event === 'SIGNED_OUT') {
-        console.log('[useAuth] Utilisateur déconnecté');
+        logger.log('[useAuth] Utilisateur déconnecté');
         setAuthState({ isLoggedIn: false, user: null, token: null });
       } else if (event === 'TOKEN_REFRESHED') {
-        console.log('[useAuth] Token rafraîchi');
+        logger.log('[useAuth] Token rafraîchi');
         if (session?.user) {
           setAuthState((prev) => ({
             ...prev,
@@ -118,19 +119,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
     } catch (err) {
-      console.error('Erreur lors de la sauvegarde du token:', err);
+      logger.error('Erreur lors de la sauvegarde du token:', err);
     }
     setAuthState({ isLoggedIn: true, user: data.user, token: data.token });
   };
 
   const logout = async () => {
     try {
-      console.log('[useAuth] Déconnexion en cours...');
+      logger.log('[useAuth] Déconnexion en cours...');
 
       // Déconnecter de Supabase
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error('Erreur lors de la déconnexion Supabase:', error);
+        logger.error('Erreur lors de la déconnexion Supabase:', error);
       }
 
       // Réinitialiser l'état local immédiatement
@@ -139,7 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       // Nettoyer complètement l'état d'authentification
       clearAuthState();
     } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error);
+      logger.error('Erreur lors de la déconnexion:', error);
       // Même en cas d'erreur, nettoyer complètement
       setAuthState({ isLoggedIn: false, user: null, token: null });
       clearAuthState();

@@ -1,4 +1,5 @@
 import { supabase } from '@/core/lib/supabase';
+import { logger } from '@/core/utils/logger';
 import type { CardRow } from '@/core/lib/supabase';
 
 export async function fetchUserCards(): Promise<CardRow[]> {
@@ -13,7 +14,7 @@ export async function fetchUserCards(): Promise<CardRow[]> {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Erreur lors de la récupération des cartes:', error);
+    logger.error('Erreur lors de la récupération des cartes:', error);
     throw error;
   }
 
@@ -28,7 +29,7 @@ export async function fetchCardsByDeck(deckId: string): Promise<CardRow[]> {
     .order('position', { ascending: true });
 
   if (error) {
-    console.error('Erreur lors de la récupération des cartes du deck:', error);
+    logger.error('Erreur lors de la récupération des cartes du deck:', error);
     throw error;
   }
 
@@ -43,7 +44,7 @@ export async function fetchRandomCard(): Promise<CardRow | null> {
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('Erreur lors de la récupération des cartes:', error);
+    logger.error('Erreur lors de la récupération des cartes:', error);
     throw error;
   }
 
@@ -74,7 +75,7 @@ export async function createCard(cardData: {
     .single();
 
   if (error) {
-    console.error('Erreur lors de la création de la carte:', error);
+    logger.error('Erreur lors de la création de la carte:', error);
     throw error;
   }
 
@@ -93,7 +94,7 @@ export async function updateCard(
     .single();
 
   if (error) {
-    console.error('Erreur lors de la mise à jour de la carte:', error);
+    logger.error('Erreur lors de la mise à jour de la carte:', error);
     throw error;
   }
 
@@ -104,7 +105,7 @@ export async function deleteCard(id: string): Promise<void> {
   const { error } = await supabase.from('cards').delete().eq('id', id);
 
   if (error) {
-    console.error('Erreur lors de la suppression de la carte:', error);
+    logger.error('Erreur lors de la suppression de la carte:', error);
     throw error;
   }
 }
@@ -116,7 +117,7 @@ export async function getCardStats() {
     .select('*', { count: 'exact', head: true });
 
   if (cardError) {
-    console.error('Erreur lors du comptage des cartes:', cardError);
+    logger.error('Erreur lors du comptage des cartes:', cardError);
     throw cardError;
   }
 
@@ -126,7 +127,7 @@ export async function getCardStats() {
     .select('card_type');
 
   if (typeError) {
-    console.error(
+    logger.error(
       'Erreur lors de la récupération des types de cartes:',
       typeError
     );

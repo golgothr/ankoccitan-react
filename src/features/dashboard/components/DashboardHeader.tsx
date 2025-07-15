@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/core/hooks/useAuth';
+import { logger } from '@/core/utils/logger';
 import logo from '@/assets/logo.png';
 import avatarImg from '@/assets/croix_occitane.png';
 
@@ -16,7 +17,7 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implémenter la recherche globale
-    console.log('Recherche:', searchQuery);
+    logger.log('Recherche:', searchQuery);
   };
 
   const { user, logout } = useAuth();
@@ -38,11 +39,11 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
 
   const handleLogout = async () => {
     try {
-      console.log('[DashboardHeader] Déconnexion en cours...');
+      logger.log('[DashboardHeader] Déconnexion en cours...');
       await logout();
       // La redirection est gérée dans la fonction logout
     } catch (error) {
-      console.error('[DashboardHeader] Erreur lors de la déconnexion:', error);
+      logger.error('[DashboardHeader] Erreur lors de la déconnexion:', error);
       // Forcer la redirection même en cas d'erreur
       window.location.href = '/';
     }
@@ -170,18 +171,30 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
               aria-haspopup="true"
               aria-expanded={isMenuOpen}
             >
-              <img src={avatarImg} alt="Avatar" className="h-8 w-8 rounded-full" />
+              <img
+                src={avatarImg}
+                alt="Avatar"
+                className="h-8 w-8 rounded-full"
+              />
               <span className="hidden sm:block text-sm font-medium text-gray-700">
                 {user?.name || 'Utilisateur'}
               </span>
-              <span className="h-2 w-2 bg-green-500 rounded-full" aria-hidden="true" />
+              <span
+                className="h-2 w-2 bg-green-500 rounded-full"
+                aria-hidden="true"
+              />
               <svg
                 className="h-4 w-4 text-gray-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 

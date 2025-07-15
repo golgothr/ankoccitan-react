@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Toast } from '../../../../components/Toast';
 import { CardFormData } from '../../types/card.types';
+import { logger } from '@/core/utils/logger';
 import { ImageSearchButton } from '../ImageSearchButton';
 import { PexelsImage } from '../../../../core/api/pexelsApi';
 
@@ -134,7 +135,7 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
 
       setSuccess('Carte ajoutée au deck avec succès !');
     } catch (error) {
-      console.error('Erreur lors de la création de la carte:', error);
+      logger.error('Erreur lors de la création de la carte:', error);
       setError('Erreur lors de la création de la carte');
     }
   };

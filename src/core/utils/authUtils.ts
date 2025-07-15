@@ -1,6 +1,7 @@
 /**
  * Utilitaires pour la gestion de l'authentification
  */
+import { logger } from './logger';
 
 /**
  * Nettoie complètement l'état d'authentification
@@ -39,6 +40,6 @@ export const isAuthenticated = (): boolean => {
  * Déconnecte l'utilisateur de manière forcée
  */
 export const forceLogout = () => {
-  console.log('[authUtils] Déconnexion forcée');
+  logger.log('[authUtils] Déconnexion forcée');
   clearAuthState();
 };

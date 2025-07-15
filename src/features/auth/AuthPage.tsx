@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LoginForm } from './components/LoginForm';
 import { RegisterForm } from './components/RegisterForm';
 import { useAuth } from '@/core/hooks/useAuth';
+import { logger } from '@/core/utils/logger';
 
 export const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,7 +14,7 @@ export const AuthPage: React.FC = () => {
   useEffect(() => {
     // Si l'utilisateur est déjà connecté, rediriger vers le dashboard
     if (isLoggedIn) {
-      console.log('Utilisateur déjà connecté, redirection vers le dashboard');
+      logger.log('Utilisateur déjà connecté, redirection vers le dashboard');
       navigate('/dashboard');
       return;
     }
@@ -27,17 +28,17 @@ export const AuthPage: React.FC = () => {
     // Vérifier s'il y a une erreur dans les paramètres
     const error = searchParams.get('error');
     if (error) {
-      console.error("Erreur d'authentification:", error);
+      logger.error("Erreur d'authentification:", error);
     }
   }, [isLoggedIn, navigate, searchParams]);
 
   const handleAuthSuccess = () => {
-    console.log('Authentification réussie, redirection vers le dashboard');
+    logger.log('Authentification réussie, redirection vers le dashboard');
     navigate('/dashboard');
   };
 
   const handleAuthError = (error: string) => {
-    console.error("Erreur d'authentification:", error);
+    logger.error("Erreur d'authentification:", error);
     // Vous pouvez ajouter ici une logique pour afficher l'erreur
   };
 

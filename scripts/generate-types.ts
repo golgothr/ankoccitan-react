@@ -12,7 +12,7 @@ const generateSupabaseTypes = async () => {
     outFile: 'src/types/supabase.ts',
   });
 
-  console.log('Types Supabase générés avec succès');
+  process.stdout.write('Types Supabase générés avec succès\n');
 };
 
 generateSupabaseTypes();

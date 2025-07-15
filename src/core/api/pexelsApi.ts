@@ -1,4 +1,5 @@
 import { settingsApi } from './settingsApi';
+import { logger } from '@/core/utils/logger';
 
 export interface PexelsImage {
   id: number;
@@ -93,7 +94,7 @@ export const pexelsApi = {
       const data: PexelsSearchResponse = await response.json();
       return data;
     } catch (error) {
-      console.error('Erreur lors de la recherche Pexels:', error);
+      logger.error('Erreur lors de la recherche Pexels:', error);
       throw error;
     }
   },
@@ -132,10 +133,7 @@ export const pexelsApi = {
       const data: PexelsSearchResponse = await response.json();
       return data;
     } catch (error) {
-      console.error(
-        'Erreur lors de la récupération des images curated:',
-        error
-      );
+      logger.error('Erreur lors de la récupération des images curated:', error);
       throw error;
     }
   },
@@ -146,7 +144,7 @@ export const pexelsApi = {
       const apiKey = await settingsApi.getApiKey('pexels');
       return !!(apiKey && apiKey.is_active);
     } catch (error) {
-      console.error(
+      logger.error(
         'Erreur lors de la vérification de la configuration Pexels:',
         error
       );
@@ -175,7 +173,7 @@ export const pexelsApi = {
 
       return response.ok;
     } catch (error) {
-      console.error('Erreur lors du test de la clé API Pexels:', error);
+      logger.error('Erreur lors du test de la clé API Pexels:', error);
       return false;
     }
   },

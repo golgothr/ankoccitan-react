@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchDeckStats } from '@/core/api/supabaseDecksApi';
 import { fetchRandomCard } from '@/core/api/supabaseCardsApi';
+import { logger } from '@/core/utils/logger';
 import type { CardRow } from '@/core/lib/supabase';
 import { useAuth } from '@/core/hooks/useAuth';
 
@@ -23,7 +24,7 @@ export function DashboardMain() {
         const randomCardData = await fetchRandomCard();
         setRandomCard(randomCardData);
       } catch (e) {
-        console.error('Erreur lors du chargement des données du dashboard:', e);
+        logger.error('Erreur lors du chargement des données du dashboard:', e);
       } finally {
         setLoading(false);
       }

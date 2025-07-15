@@ -3,6 +3,7 @@ import { Toast } from '../../../../components/Toast';
 import { CardFormData } from '../../types/card.types';
 import { ImageSearchButton } from '../ImageSearchButton';
 import { PexelsImage } from '../../../../core/api/pexelsApi';
+import { logger } from '@/core/utils/logger';
 
 interface ImageToOccitanCardProps {
   onCardCreated: (card: CardFormData) => Promise<void>;
@@ -102,7 +103,7 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
 
       setSuccess('Carte ajoutée au deck avec succès !');
     } catch (error) {
-      console.error('Erreur lors de la création de la carte:', error);
+      logger.error('Erreur lors de la création de la carte:', error);
       setError('Erreur lors de la création de la carte');
     }
   };

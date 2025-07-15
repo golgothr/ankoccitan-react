@@ -4,6 +4,7 @@ import {
   PexelsImage,
   PexelsSearchParams,
 } from '../../../core/api/pexelsApi';
+import { logger } from '@/core/utils/logger';
 
 interface ImageSearchModalProps {
   isOpen: boolean;
@@ -65,7 +66,7 @@ export const ImageSearchModal: React.FC<ImageSearchModalProps> = ({
         setHasMore(response.photos.length === searchParams.per_page);
         setCurrentPage(page);
       } catch (error) {
-        console.error("Erreur lors de la recherche d'images:", error);
+        logger.error("Erreur lors de la recherche d'images:", error);
         setError(
           error instanceof Error
             ? error.message
@@ -97,7 +98,7 @@ export const ImageSearchModal: React.FC<ImageSearchModalProps> = ({
         );
       }
     } catch (error) {
-      console.error(
+      logger.error(
         'Erreur lors de la vérification de la configuration:',
         error
       );
@@ -127,7 +128,7 @@ export const ImageSearchModal: React.FC<ImageSearchModalProps> = ({
       onSelectImage(image);
       onClose();
     } catch (error) {
-      console.error('Erreur lors du téléchargement:', error);
+      logger.error('Erreur lors du téléchargement:', error);
       setError("Erreur lors du téléchargement de l'image");
     } finally {
       setDownloadingImage(null);

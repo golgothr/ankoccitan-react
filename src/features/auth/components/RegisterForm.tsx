@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { authApi } from '@/core/api';
+import { logger } from '@/core/utils/logger';
 
 interface RegisterFormProps {
   onSuccess: () => void;
@@ -57,7 +58,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
     setIsLoading(true);
 
     try {
-      console.log("Tentative d'inscription...");
+      logger.log("Tentative d'inscription...");
 
       const result = await authApi.registerUser({
         name: formData.name,
@@ -65,10 +66,10 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
         password: formData.password,
       });
 
-      console.log('Inscription réussie:', result);
+      logger.log('Inscription réussie:', result);
       onSuccess();
     } catch (err) {
-      console.error("Erreur lors de l'inscription:", err);
+      logger.error("Erreur lors de l'inscription:", err);
       const errorMessage =
         err instanceof Error ? err.message : "Erreur lors de l'inscription";
       onError(errorMessage);

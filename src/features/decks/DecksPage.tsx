@@ -7,6 +7,7 @@ import { DeckStats } from './components/DeckStats';
 import { DeckGrid } from './components/DeckGrid';
 import { CreateDeckModal, CreateDeckData } from './components/CreateDeckModal';
 import { Deck, DeckCategory } from './types/deck.types';
+import { logger } from '@/core/utils/logger';
 
 export function DecksPage() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export function DecksPage() {
 
   const handleEdit = (deck: Deck) => {
     // ✅ Naviguer vers la page d'édition (à implémenter plus tard)
-    console.log('Éditer le deck:', deck.name);
+    logger.log('Éditer le deck:', deck.name);
     // TODO: Naviguer vers /decks/:id/edit
     // navigate(`/decks/${deck.id}/edit`);
   };
@@ -47,9 +48,9 @@ export function DecksPage() {
       };
 
       await addDeck(duplicatedDeck);
-      console.log('Deck dupliqué avec succès');
+      logger.log('Deck dupliqué avec succès');
     } catch (error) {
-      console.error('Erreur lors de la duplication du deck:', error);
+      logger.error('Erreur lors de la duplication du deck:', error);
       // L'erreur sera gérée par la modal
       throw error;
     }
@@ -90,7 +91,7 @@ export function DecksPage() {
 
     // Créer le deck dans Supabase
     await addDeck(newDeck);
-    console.log('Deck créé avec succès dans Supabase');
+    logger.log('Deck créé avec succès dans Supabase');
   };
 
   return (
