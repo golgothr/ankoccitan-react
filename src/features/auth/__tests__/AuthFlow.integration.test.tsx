@@ -6,12 +6,12 @@ import { LoginForm } from '../components/LoginForm';
 import { mockApiResponse, mockApiError } from '../../../core/test/TestWrapper';
 
 // Mock des APIs
-vi.mock('../../../core/api/authApi', () => ({
+vi.mock('../../../core/api', () => ({
   loginUser: vi.fn(),
   registerUser: vi.fn(),
 }));
 
-describe('AuthFlow - Tests d\'intégration', () => {
+describe("AuthFlow - Tests d'intégration", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
@@ -30,8 +30,10 @@ describe('AuthFlow - Tests d\'intégration', () => {
         token: 'mock-jwt-token',
       };
 
-      const { loginUser } = await import('../../../core/api/authApi');
-      vi.mocked(loginUser).mockResolvedValue(mockApiResponse(mockLoginResponse));
+      const { loginUser } = await import('../../../core/api');
+      vi.mocked(loginUser).mockResolvedValue(
+        mockApiResponse(mockLoginResponse)
+      );
 
       // Act
       render(<LoginForm />, {
@@ -43,7 +45,9 @@ describe('AuthFlow - Tests d\'intégration', () => {
       // Remplir le formulaire
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, 'password123');
@@ -63,10 +67,12 @@ describe('AuthFlow - Tests d\'intégration', () => {
       });
     });
 
-    it('devrait afficher une erreur en cas d\'échec de connexion', async () => {
+    it("devrait afficher une erreur en cas d'échec de connexion", async () => {
       // Arrange
-      const { loginUser } = await import('../../../core/api/authApi');
-      vi.mocked(loginUser).mockRejectedValue(mockApiError('Identifiants invalides'));
+      const { loginUser } = await import('../../../core/api');
+      vi.mocked(loginUser).mockRejectedValue(
+        mockApiError('Identifiants invalides')
+      );
 
       // Act
       render(<LoginForm />, {
@@ -77,7 +83,9 @@ describe('AuthFlow - Tests d\'intégration', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'invalid@example.com');
       await user.type(passwordInput, 'wrongpassword');
@@ -97,7 +105,9 @@ describe('AuthFlow - Tests d\'intégration', () => {
         },
       });
 
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       // Essayer de soumettre sans remplir les champs
       await user.click(submitButton);
@@ -105,13 +115,15 @@ describe('AuthFlow - Tests d\'intégration', () => {
       // Assert
       await waitFor(() => {
         expect(screen.getByText(/l'email est requis/i)).toBeInTheDocument();
-        expect(screen.getByText(/le mot de passe est requis/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/le mot de passe est requis/i)
+        ).toBeInTheDocument();
       });
     });
   });
 
   describe('Validation des champs', () => {
-    it('devrait valider le format de l\'email', async () => {
+    it("devrait valider le format de l'email", async () => {
       // Act
       render(<LoginForm />, {
         wrapperProps: {
@@ -120,14 +132,18 @@ describe('AuthFlow - Tests d\'intégration', () => {
       });
 
       const emailInput = screen.getByLabelText(/email/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'invalid-email');
       await user.click(submitButton);
 
       // Assert
       await waitFor(() => {
-        expect(screen.getByText(/format d'email invalide/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/format d'email invalide/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -141,7 +157,9 @@ describe('AuthFlow - Tests d\'intégration', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, '123');
@@ -149,7 +167,11 @@ describe('AuthFlow - Tests d\'intégration', () => {
 
       // Assert
       await waitFor(() => {
-        expect(screen.getByText(/le mot de passe doit contenir au moins 6 caractères/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /le mot de passe doit contenir au moins 6 caractères/i
+          )
+        ).toBeInTheDocument();
       });
     });
   });
@@ -165,7 +187,9 @@ describe('AuthFlow - Tests d\'intégration', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       // Navigation au clavier
       emailInput.focus();
@@ -200,9 +224,12 @@ describe('AuthFlow - Tests d\'intégration', () => {
   describe('Performance', () => {
     it('devrait gérer les soumissions multiples', async () => {
       // Arrange
-      const { loginUser } = await import('../../../core/api/authApi');
-      vi.mocked(loginUser).mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({ user: null, token: 'test' }), 1000))
+      const { loginUser } = await import('../../../core/api');
+      vi.mocked(loginUser).mockImplementation(
+        () =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ user: null, token: 'test' }), 1000)
+          )
       );
 
       // Act
@@ -214,7 +241,9 @@ describe('AuthFlow - Tests d\'intégration', () => {
 
       const emailInput = screen.getByLabelText(/email/i);
       const passwordInput = screen.getByLabelText(/mot de passe/i);
-      const submitButton = screen.getByRole('button', { name: /se connecter/i });
+      const submitButton = screen.getByRole('button', {
+        name: /se connecter/i,
+      });
 
       await user.type(emailInput, 'test@example.com');
       await user.type(passwordInput, 'password123');
@@ -230,4 +259,4 @@ describe('AuthFlow - Tests d\'intégration', () => {
       });
     });
   });
-}); 
+});
