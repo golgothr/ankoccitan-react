@@ -6,7 +6,15 @@ export default {
     './public/index.html',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'occitan-red': '#d02f2f',
+        'occitan-orange': '#f37321',
+        'occitan-yellow': '#f5c33c',
+        'occitan-cream': '#fef8f2',
+        'occitan-light': '#f9f9f9',
+      },
+    },
   },
   plugins: [],
 };
