@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { authApi } from '@/core/api/authApi';
+import { authApi } from '@/core/api';
 
 interface RegisterFormProps {
   onSuccess: () => void;

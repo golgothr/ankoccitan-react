@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { loginUser, LoginCredentials } from '../../../core/api/authApi';
+import { authApi, LoginCredentials } from '@/core/api';
 import { useAuth } from '@/core/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,7 +32,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
 
   // Mutation pour la connexion
   const loginMutation = useMutation({
-    mutationFn: loginUser,
+    mutationFn: authApi.loginUser,
     onSuccess: (data) => {
       console.log('[LoginForm] Connexion réussie', data);
       login(data);
@@ -51,12 +51,15 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
   });
 
   // Validation des champs
-  const validateField = (name: keyof FormData, value: string): string | undefined => {
+  const validateField = (
+    name: keyof FormData,
+    value: string
+  ): string | undefined => {
     switch (name) {
       case 'email':
-        if (!value) return 'L\'email est requis';
+        if (!value) return "L'email est requis";
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          return 'Format d\'email invalide';
+          return "Format d'email invalide";
         }
         break;
       case 'password':
@@ -72,11 +75,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
   // Gestion des changements de champs
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     // Valider le champ en temps réel
     const fieldError = validateField(name as keyof FormData, value);
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
       [name]: fieldError,
       general: undefined, // Effacer l'erreur générale
@@ -91,7 +94,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
     // Validation complète
     const newErrors: FormErrors = {};
     Object.keys(formData).forEach((key) => {
-      const fieldError = validateField(key as keyof FormData, formData[key as keyof FormData]);
+      const fieldError = validateField(
+        key as keyof FormData,
+        formData[key as keyof FormData]
+      );
       if (fieldError) {
         newErrors[key as keyof FormData] = fieldError;
       }
@@ -110,7 +116,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Email
         </label>
         <input
@@ -134,7 +143,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="password"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Mot de passe
         </label>
         <input
@@ -172,9 +184,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
           text-sm font-semibold text-white 
           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange 
           transition-all duration-300 transform hover:scale-105
-          ${isSubmitting
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-gradient-to-r from-occitan-red to-occitan-orange hover:from-occitan-orange hover:to-occitan-red'
+          ${
+            isSubmitting
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-gradient-to-r from-occitan-red to-occitan-orange hover:from-occitan-orange hover:to-occitan-red'
           }
         `}
         aria-describedby={isSubmitting ? 'submitting-status' : undefined}
@@ -215,4 +228,4 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onError }) => {
       )}
     </form>
   );
-}; 
+};

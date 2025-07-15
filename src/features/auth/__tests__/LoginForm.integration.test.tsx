@@ -5,7 +5,7 @@ import { render, mockApiError } from '../../../core/test/TestWrapper';
 import { LoginForm } from '../components/LoginForm';
 
 // Mock des APIs
-vi.mock('../../../core/api/authApi', () => ({
+vi.mock('../../../core/api', () => ({
   loginUser: vi.fn(),
 }));
 
@@ -33,7 +33,7 @@ describe("LoginForm - Tests d'intégration avancés", () => {
         token: 'mock-jwt-token',
       };
 
-      const { loginUser } = await import('../../../core/api/authApi');
+      const { loginUser } = await import('../../../core/api');
       vi.mocked(loginUser).mockResolvedValue(mockLoginResponse);
 
       const onSuccess = vi.fn();
@@ -88,7 +88,7 @@ describe("LoginForm - Tests d'intégration avancés", () => {
 
     it('devrait gérer les erreurs de connexion avec retry', async () => {
       // Arrange
-      const { loginUser } = await import('../../../core/api/authApi');
+      const { loginUser } = await import('../../../core/api');
 
       // Premier appel échoue, deuxième réussit
       vi.mocked(loginUser)
@@ -268,7 +268,7 @@ describe("LoginForm - Tests d'intégration avancés", () => {
 
     it("devrait annoncer les changements d'état aux lecteurs d'écran", async () => {
       // Arrange
-      const { loginUser } = await import('../../../core/api/authApi');
+      const { loginUser } = await import('../../../core/api');
       vi.mocked(loginUser).mockImplementation(
         () =>
           new Promise((resolve) =>
@@ -320,7 +320,7 @@ describe("LoginForm - Tests d'intégration avancés", () => {
   describe('Performance et UX', () => {
     it('devrait empêcher les soumissions multiples', async () => {
       // Arrange
-      const { loginUser } = await import('../../../core/api/authApi');
+      const { loginUser } = await import('../../../core/api');
       vi.mocked(loginUser).mockImplementation(
         () =>
           new Promise((resolve) =>
@@ -373,7 +373,7 @@ describe("LoginForm - Tests d'intégration avancés", () => {
 
     it('devrait gérer les timeouts de requête', async () => {
       // Arrange
-      const { loginUser } = await import('../../../core/api/authApi');
+      const { loginUser } = await import('../../../core/api');
       vi.mocked(loginUser).mockRejectedValue(new Error('Timeout'));
 
       // Act
@@ -403,7 +403,7 @@ describe("LoginForm - Tests d'intégration avancés", () => {
   describe('Gestion des erreurs réseau', () => {
     it('devrait gérer les erreurs 401', async () => {
       // Arrange
-      const { loginUser } = await import('../../../core/api/authApi');
+      const { loginUser } = await import('../../../core/api');
       const error = new Error('Unauthorized');
       error.name = 'AxiosError';
       (error as unknown as { response: { status: number } }).response = {
@@ -436,7 +436,7 @@ describe("LoginForm - Tests d'intégration avancés", () => {
 
     it('devrait gérer les erreurs 500', async () => {
       // Arrange
-      const { loginUser } = await import('../../../core/api/authApi');
+      const { loginUser } = await import('../../../core/api');
       const error = new Error('Internal Server Error');
       error.name = 'AxiosError';
       (error as unknown as { response: { status: number } }).response = {

@@ -52,6 +52,7 @@ src/
 - **React Router v6** (routing)
 - **Zustand 5.0.6** (state management)
 - **TanStack React Query 5.81.5** (server state)
+- **i18next 25.3.2** (internationalisation)
 
 ### API & HTTP
 
@@ -318,6 +319,10 @@ npm run build-storybook  # Build de Storybook
 VITE_API_URL=http://localhost:3000/api
 VITE_APP_TITLE=AnkOccitan React
 ```
+
+### Internationalisation
+
+Les fichiers de traduction se trouvent dans `public/locales/<lang>/translation.json`.
 
 ### Alias de Chemins
 
