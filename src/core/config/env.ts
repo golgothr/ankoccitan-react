@@ -11,6 +11,12 @@ interface EnvironmentConfig {
   // API
   API_URL: string;
 
+  // Services externes
+  REVIARDA_API_URL?: string;
+  REVIARDA_API_KEY?: string;
+  VOTZ_API_URL?: string;
+  VOTZ_API_KEY?: string;
+
   // Mode de développement
   NODE_ENV: 'development' | 'production' | 'test';
   IS_DEV: boolean;
@@ -29,6 +35,12 @@ function validateEnvironment(): EnvironmentConfig {
 
     // API - Variable optionnelle avec valeur par défaut
     API_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+
+    // Services externes
+    REVIARDA_API_URL: import.meta.env.VITE_REVIARDA_API_URL,
+    REVIARDA_API_KEY: import.meta.env.VITE_REVIARDA_API_KEY,
+    VOTZ_API_URL: import.meta.env.VITE_VOTZ_API_URL,
+    VOTZ_API_KEY: import.meta.env.VITE_VOTZ_API_KEY,
 
     // Mode de développement
     NODE_ENV: (import.meta.env.MODE ||
@@ -54,6 +66,23 @@ function validateEnvironment(): EnvironmentConfig {
       `Variables d'environnement manquantes : ${missingVars.join(', ')}\n` +
         'Veuillez créer un fichier .env à la racine du projet avec ces variables.'
     );
+  }
+
+  // Validation optionnelle des URLs des services externes
+  if (config.REVIARDA_API_URL) {
+    try {
+      new URL(config.REVIARDA_API_URL);
+    } catch {
+      throw new Error('VITE_REVIARDA_API_URL doit être une URL valide');
+    }
+  }
+
+  if (config.VOTZ_API_URL) {
+    try {
+      new URL(config.VOTZ_API_URL);
+    } catch {
+      throw new Error('VITE_VOTZ_API_URL doit être une URL valide');
+    }
   }
 
   // Validation du format des URLs Supabase

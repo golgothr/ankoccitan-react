@@ -15,6 +15,10 @@ Créez un fichier `.env.local` à la racine du projet :
 ```env
 VITE_SUPABASE_URL=votre_url_supabase
 VITE_SUPABASE_ANON_KEY=votre_cle_anonyme
+VITE_REVIARDA_API_URL=https://revirada.example.com
+VITE_REVIARDA_API_KEY=ma_cle_revirada
+VITE_VOTZ_API_URL=https://votz.example.com
+VITE_VOTZ_API_KEY=ma_cle_votz
 ```
 
 ### 3. Configuration de la base de données
