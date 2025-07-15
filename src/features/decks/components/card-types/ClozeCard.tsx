@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Toast } from '../../../../components/Toast';
 import { CardFormData } from '../../types/card.types';
+import { reviradaApi } from '@/core/api';
 
 interface ClozeCardProps {
   onCardCreated: (card: CardFormData) => Promise<void>;
 }
 
-export const ClozeCard: React.FC<ClozeCardProps> = ({ onCardCreated }) => {
+const ClozeCardComponent: React.FC<ClozeCardProps> = ({ onCardCreated }) => {
   const [formData, setFormData] = useState({
     frenchText: '',
     occitanText: '',
@@ -18,11 +19,10 @@ export const ClozeCard: React.FC<ClozeCardProps> = ({ onCardCreated }) => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Simuler l'API de traduction (à remplacer par l'API réelle)
+  // Traduction via l'API Revirada
   const translateToOccitan = async (text: string): Promise<string> => {
-    // TODO: Intégrer l'API Revirada
-    await new Promise((resolve) => setTimeout(resolve, 800)); // Simule un délai
-    return `Traduction de "${text}" en occitan`;
+    const { text: translated } = await reviradaApi.translate(text);
+    return translated;
   };
 
   // Extraire les mots du texte français
@@ -77,8 +77,10 @@ export const ClozeCard: React.FC<ClozeCardProps> = ({ onCardCreated }) => {
         clozeWords: extractWords(prev.frenchText),
       }));
       setSuccess('Traduction effectuée !');
-    } catch {
-      setError('Erreur lors de la traduction');
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : 'Erreur lors de la traduction';
+      setError(message);
     } finally {
       setIsTranslating(false);
     }
@@ -333,18 +335,11 @@ export const ClozeCard: React.FC<ClozeCardProps> = ({ onCardCreated }) => {
       </div>
 
       {error && (
-        <Toast
-          type="error"
-          message={error}
-          onClose={() => setError(null)}
-        />
+        <Toast type="error" message={error} onClose={() => setError(null)} />
       )}
-      {success && (
-        <Toast
-          message={success}
-          onClose={() => setSuccess(null)}
-        />
-      )}
+      {success && <Toast message={success} onClose={() => setSuccess(null)} />}
     </div>
   );
 };
+
+export const ClozeCard = memo(ClozeCardComponent);
