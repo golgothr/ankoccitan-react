@@ -220,6 +220,7 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
               onClick={handleTranslate}
               disabled={isTranslating || !formData.frenchDescription.trim()}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              aria-label="Traduire la description"
             >
               {isTranslating ? 'Traduction...' : 'Traduire en occitan'}
             </button>

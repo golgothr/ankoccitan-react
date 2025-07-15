@@ -180,6 +180,7 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
               onClick={handleTranslate}
               disabled={isTranslating || !formData.frenchText.trim()}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+              aria-label="Traduire le texte"
             >
               {isTranslating ? 'Traduction...' : 'Traduire en occitan'}
             </button>
@@ -262,6 +263,7 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
                       onClick={handleGenerateAudio}
                       disabled={isGeneratingAudio}
                       className="text-xs px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
+                      aria-label="Générer l'audio"
                     >
                       {isGeneratingAudio ? 'Génération...' : 'Générer audio'}
                     </button>
