@@ -1,27 +1,39 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDecks } from './hooks/useDecks';
+import { usePaginatedDecks } from './hooks/usePaginatedDecks';
+import {
+  createDeck as createDeckApi,
+  deleteDeck as deleteDeckApi,
+} from '../../core/api/supabaseDecksApi';
 import { useAuth } from '../../core/hooks/useAuth';
-import { DeckFilters } from './components/DeckFilters';
-import { DeckStats } from './components/DeckStats';
+// import { DeckFilters } from './components/DeckFilters';
+// import { DeckStats } from './components/DeckStats';
 import { DeckGrid } from './components/DeckGrid';
 import { CreateDeckModal, CreateDeckData } from './components/CreateDeckModal';
 import { Deck, DeckCategory } from './types/deck.types';
 import { logger } from '@/core/utils/logger';
 
+const categoryToDifficultyMap: Record<DeckCategory, string> = {
+  vocabulary: 'débutant',
+  grammar: 'intermédiaire',
+  culture: 'avancé',
+  conjugation: 'intermédiaire',
+  expressions: 'avancé',
+};
+
 export function DecksPage() {
   const navigate = useNavigate();
-  const { user } = useAuth(); // ✅ Récupérer l'utilisateur connecté
+  const { user } = useAuth();
   const {
     decks,
-    stats,
-    filters,
+    page,
+    totalPages,
     loading,
     error,
-    updateFilters,
-    deleteDeck,
-    addDeck,
-  } = useDecks();
+    nextPage,
+    prevPage,
+    refetch,
+  } = usePaginatedDecks(12);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(
     null
   );
@@ -37,36 +49,38 @@ export function DecksPage() {
   const handleDuplicate = useCallback(
     async (deck: Deck) => {
       try {
-        // ✅ Créer une copie du deck
-        const duplicatedDeck = {
-          name: `${deck.name} (copie)`,
+        const duplicated = {
+          title: `${deck.name} (copie)`,
           description: deck.description,
-          category: deck.category,
+          difficulty_level: categoryToDifficultyMap[deck.category] as
+            'débutant' | 'intermédiaire' | 'avancé',
           tags: deck.tags,
-          isPublic: false, // Les copies sont privées par défaut
-          cardCount: 0, // Pas de cartes dans la copie
-          userId: user?.id || '',
+          is_public: false,
         };
 
-        await addDeck(duplicatedDeck);
+        await createDeckApi(duplicated);
+        await refetch();
         logger.log('Deck dupliqué avec succès');
       } catch (error) {
         logger.error('Erreur lors de la duplication du deck:', error);
-        // L'erreur sera gérée par la modal
         throw error;
       }
     },
-    [addDeck, user?.id]
+    [refetch]
   );
 
   const handleDelete = useCallback((deck: Deck) => {
     setShowDeleteConfirm(deck.id);
   }, []);
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (showDeleteConfirm) {
-      deleteDeck(showDeleteConfirm);
-      setShowDeleteConfirm(null);
+      try {
+        await deleteDeckApi(showDeleteConfirm);
+        await refetch();
+      } finally {
+        setShowDeleteConfirm(null);
+      }
     }
   };
 
@@ -75,25 +89,17 @@ export function DecksPage() {
   };
 
   const handleCreateDeckSubmit = async (deckData: CreateDeckData) => {
-    // Mapper le niveau de difficulté vers le type DeckCategory
-    const difficultyMap: Record<string, DeckCategory> = {
-      débutant: 'vocabulary',
-      intermédiaire: 'grammar',
-      avancé: 'culture',
-    };
-
     const newDeck = {
-      name: deckData.name,
+      title: deckData.name,
       description: deckData.description,
-      category: difficultyMap[deckData.difficultyLevel] || 'vocabulary',
+      difficulty_level: deckData.difficultyLevel as
+        'débutant' | 'intermédiaire' | 'avancé',
       tags: deckData.tags,
-      isPublic: deckData.isPublic,
-      cardCount: 0,
-      userId: user?.id || '', // ✅ Utiliser l'ID de l'utilisateur connecté
+      is_public: deckData.isPublic,
     };
 
-    // Créer le deck dans Supabase
-    await addDeck(newDeck);
+    await createDeckApi(newDeck);
+    await refetch();
     logger.log('Deck créé avec succès dans Supabase');
   };
 
@@ -174,10 +180,10 @@ export function DecksPage() {
         </div>
 
         {/* Statistiques */}
-        <DeckStats stats={stats} />
+        {/* <DeckStats stats={stats} /> */}
 
         {/* Filtres */}
-        <DeckFilters filters={filters} onFiltersChange={updateFilters} />
+        {/* <DeckFilters filters={filters} onFiltersChange={updateFilters} /> */}
 
         {/* Indicateurs de chargement et d'erreur */}
         {loading && (
@@ -222,6 +228,29 @@ export function DecksPage() {
             onDuplicate={handleDuplicate}
             onDelete={handleDelete}
           />
+        )}
+
+        {/* Pagination */}
+        {!loading && !error && totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-4 mt-6">
+            <button
+              onClick={prevPage}
+              disabled={page === 1}
+              className="px-3 py-1 rounded-md bg-gray-100 disabled:opacity-50"
+            >
+              Précédent
+            </button>
+            <span className="text-sm">
+              Page {page} / {totalPages}
+            </span>
+            <button
+              onClick={nextPage}
+              disabled={page === totalPages}
+              className="px-3 py-1 rounded-md bg-gray-100 disabled:opacity-50"
+            >
+              Suivant
+            </button>
+          </div>
         )}
 
         {/* Modal de confirmation de suppression */}
