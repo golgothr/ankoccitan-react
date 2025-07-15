@@ -316,8 +316,14 @@ npm run build-storybook  # Build de Storybook
 ### Variables d'Environnement
 
 ```env
+VITE_SUPABASE_URL=votre_url_supabase
+VITE_SUPABASE_ANON_KEY=votre_cle_anonyme
 VITE_API_URL=http://localhost:3000/api
 VITE_APP_TITLE=AnkOccitan React
+VITE_REVIARDA_API_URL=https://revirada.example.com
+VITE_REVIARDA_API_KEY=ma_cle_revirada
+VITE_VOTZ_API_URL=https://votz.example.com
+VITE_VOTZ_API_KEY=ma_cle_votz
 ```
 
 ### Internationalisation
