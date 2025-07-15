@@ -82,37 +82,7 @@
 }
 
 /* Palette de couleurs occitane */
-.text-occitan-red {
-  color: #d02f2f;
-}
-
-.text-occitan-orange {
-  color: #f37321;
-}
-
-.text-occitan-yellow {
-  color: #f5c33c;
-}
-
-.bg-occitan-red {
-  background-color: #d02f2f;
-}
-
-.bg-occitan-orange {
-  background-color: #f37321;
-}
-
-.bg-occitan-yellow {
-  background-color: #f5c33c;
-}
-
-.bg-occitan-cream {
-  background-color: #fef8f2;
-}
-
-.bg-occitan-light {
-  background-color: #f9f9f9;
-}
+/* Les couleurs sont désormais configurées dans tailwind.config.js. */
 
 html,
 body,
