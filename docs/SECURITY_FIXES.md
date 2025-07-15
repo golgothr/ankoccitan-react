@@ -105,6 +105,11 @@ Après l'exécution du script, les alertes suivantes devraient disparaître :
 - ✅ Moins de couches d'abstraction
 - ✅ Debugging plus facile
 
+## 🌐 **Sécurisation du client HTTP**
+
+- Ajout d'en-têtes `X-Frame-Options` et `X-Content-Type-Options` pour toutes les requêtes Axios
+- Mise en place d'un `rateLimiter` côté client limitant à 5 requêtes par seconde
+
 ## 🛡️ **Bonnes pratiques pour l'avenir**
 
 ### **1. Éviter SECURITY DEFINER**
