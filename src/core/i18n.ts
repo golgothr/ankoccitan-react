@@ -1,27 +1,19 @@
-import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import Backend from 'i18next-http-backend';
-import { env } from './config/env';
-import { useAppStore } from './store/useAppStore';
+// Configuration i18n simplifiée
+// Pour l'instant, on utilise une configuration basique
+// Les traductions peuvent être ajoutées plus tard
 
-// Config initiale
-void i18n
-  .use(Backend)
-  .use(initReactI18next)
-  .init({
-    fallbackLng: 'fr',
-    lng: useAppStore.getState().language,
-    debug: env.IS_DEV,
-    interpolation: {
-      escapeValue: false,
-    },
-    backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
-    },
-  });
-
-i18n.on('languageChanged', (lng) => {
-  useAppStore.getState().setLanguage(lng);
-});
+export const i18n = {
+  t: (key: string, _options?: Record<string, unknown>) => {
+    // Retourne la clé par défaut, à remplacer par de vraies traductions
+    return key;
+  },
+  changeLanguage: (lng: string) => {
+    // Log le changement de langue en développement
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Language changed to:', lng);
+    }
+  },
+  language: 'fr',
+};
 
 export default i18n;

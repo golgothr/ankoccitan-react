@@ -1,8 +1,6 @@
-import { useTranslation } from 'react-i18next';
+import { i18n } from '@/core/i18n';
 
 export const LanguageSelector = () => {
-  const { i18n } = useTranslation();
-
   const languages = [
     { code: 'fr', name: 'Français', flag: '🇫🇷' },
     { code: 'oc', name: 'Occitan', flag: '🏴' },

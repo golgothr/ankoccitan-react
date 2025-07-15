@@ -160,3 +160,5 @@ export const CardCreationPage: React.FC = () => {
     </div>
   );
 };
+
+export default CardCreationPage;

@@ -263,3 +263,5 @@ export function DecksPage() {
     </div>
   );
 }
+
+export default DecksPage;

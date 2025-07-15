@@ -26,7 +26,7 @@ export function DeckStats({ stats }: DeckStatsProps) {
         {/* Total des decks */}
         <div className="text-center">
           <div className="text-3xl font-bold text-occitan-orange mb-1">
-            {stats.totalDecks}
+            {stats.totalDecks || 0}
           </div>
           <div className="text-sm text-gray-600">Decks créés</div>
         </div>
@@ -34,7 +34,7 @@ export function DeckStats({ stats }: DeckStatsProps) {
         {/* Total des cartes */}
         <div className="text-center">
           <div className="text-3xl font-bold text-occitan-red mb-1">
-            {stats.totalCards}
+            {stats.totalCards || 0}
           </div>
           <div className="text-sm text-gray-600">Cartes créées</div>
         </div>

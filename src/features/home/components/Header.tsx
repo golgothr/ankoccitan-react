@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { i18n } from '@/core/i18n';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import logo from '@/assets/logo.png';
 
 export function Header() {
-  const { t } = useTranslation();
+  const t = (key: string) => i18n.t(key);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {

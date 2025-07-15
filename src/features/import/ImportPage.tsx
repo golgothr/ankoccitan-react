@@ -43,3 +43,5 @@ export function ImportPage() {
     </div>
   );
 }
+
+export default ImportPage;
