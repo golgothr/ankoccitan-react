@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Toast } from '../../../../components/Toast';
 import { CardFormData } from '../../types/card.types';
 
@@ -6,7 +6,7 @@ interface ManualCardProps {
   onCardCreated: (card: CardFormData) => Promise<void>;
 }
 
-export const ManualCard: React.FC<ManualCardProps> = ({ onCardCreated }) => {
+const ManualCardComponent: React.FC<ManualCardProps> = ({ onCardCreated }) => {
   const [formData, setFormData] = useState({
     frontContent: '',
     backContent: '',
@@ -220,18 +220,11 @@ export const ManualCard: React.FC<ManualCardProps> = ({ onCardCreated }) => {
       </div>
 
       {error && (
-        <Toast
-          type="error"
-          message={error}
-          onClose={() => setError(null)}
-        />
+        <Toast type="error" message={error} onClose={() => setError(null)} />
       )}
-      {success && (
-        <Toast
-          message={success}
-          onClose={() => setSuccess(null)}
-        />
-      )}
+      {success && <Toast message={success} onClose={() => setSuccess(null)} />}
     </div>
   );
 };
+
+export const ManualCard = memo(ManualCardComponent);

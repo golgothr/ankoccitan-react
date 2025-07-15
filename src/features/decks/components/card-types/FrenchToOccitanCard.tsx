@@ -4,6 +4,7 @@ import { CardFormData } from '../../types/card.types';
 import { logger } from '@/core/utils/logger';
 import { ImageSearchButton } from '../ImageSearchButton';
 import { PexelsImage } from '../../../../core/api/pexelsApi';
+import { reviradaApi, votzApi } from '@/core/api';
 
 interface FrenchToOccitanCardProps {
   onCardCreated: (card: CardFormData) => Promise<void>;
@@ -29,18 +30,16 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
   const [success, setSuccess] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // Simuler l'API de traduction (à remplacer par l'API réelle)
+  // Traduction via l'API Revirada
   const translateToOccitan = async (text: string): Promise<string> => {
-    // TODO: Intégrer l'API Revirada
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // Simule un délai
-    return `Traduction de "${text}" en occitan`;
+    const { text: translated } = await reviradaApi.translate(text);
+    return translated;
   };
 
-  // Simuler l'API de génération audio (à remplacer par l'API réelle)
+  // Génération audio via l'API Votz
   const generateAudio = async (text: string): Promise<string> => {
-    // TODO: Intégrer l'API Votz
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simule un délai
-    return `https://example.com/audio/${encodeURIComponent(text)}.mp3`;
+    const { url } = await votzApi.textToSpeech(text);
+    return url;
   };
 
   const handleTranslate = async () => {
@@ -55,8 +54,10 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
       const translation = await translateToOccitan(formData.frenchText);
       setFormData((prev) => ({ ...prev, occitanText: translation }));
       setSuccess('Traduction effectuée !');
-    } catch {
-      setError('Erreur lors de la traduction');
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : 'Erreur lors de la traduction';
+      setError(message);
     } finally {
       setIsTranslating(false);
     }
@@ -74,8 +75,10 @@ export const FrenchToOccitanCard: React.FC<FrenchToOccitanCardProps> = ({
       const audioUrl = await generateAudio(formData.occitanText);
       setFormData((prev) => ({ ...prev, pronunciation: audioUrl }));
       setSuccess('Audio généré !');
-    } catch {
-      setError('Erreur lors de la génération audio');
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : 'Erreur lors de la génération audio';
+      setError(message);
     } finally {
       setIsGeneratingAudio(false);
     }

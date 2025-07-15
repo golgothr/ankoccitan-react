@@ -4,6 +4,7 @@ import { CardFormData } from '../../types/card.types';
 import { ImageSearchButton } from '../ImageSearchButton';
 import { PexelsImage } from '../../../../core/api/pexelsApi';
 import { logger } from '@/core/utils/logger';
+import { reviradaApi } from '@/core/api';
 
 interface ImageToOccitanCardProps {
   onCardCreated: (card: CardFormData) => Promise<void>;
@@ -24,11 +25,10 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Simuler l'API de traduction (à remplacer par l'API réelle)
+  // Traduction via l'API Revirada
   const translateToOccitan = async (text: string): Promise<string> => {
-    // TODO: Intégrer l'API Revirada
-    await new Promise((resolve) => setTimeout(resolve, 800)); // Simule un délai
-    return `Traduction de "${text}" en occitan`;
+    const { text: translated } = await reviradaApi.translate(text);
+    return translated;
   };
 
   const handleImageSelected = (image: PexelsImage) => {
@@ -53,8 +53,10 @@ export const ImageToOccitanCard: React.FC<ImageToOccitanCardProps> = ({
       const translation = await translateToOccitan(formData.frenchDescription);
       setFormData((prev) => ({ ...prev, occitanTranslation: translation }));
       setSuccess('Traduction effectuée !');
-    } catch {
-      setError('Erreur lors de la traduction');
+    } catch (e) {
+      const message =
+        e instanceof Error ? e.message : 'Erreur lors de la traduction';
+      setError(message);
     } finally {
       setIsTranslating(false);
     }
