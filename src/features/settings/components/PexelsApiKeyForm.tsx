@@ -28,7 +28,14 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
       }
     } catch (error) {
       logger.error('Erreur lors du chargement de la clé API:', error);
-      onError?.('Erreur lors du chargement de la clé API');
+      if (
+        error instanceof Error &&
+        error.message.includes('Utilisateur non connecté')
+      ) {
+        onError?.('Vous devez être connecté pour charger votre clé API');
+      } else {
+        onError?.('Erreur lors du chargement de la clé API');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +66,16 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
       );
     } catch (error) {
       logger.error('Erreur lors de la sauvegarde:', error);
-      onError?.('Erreur lors de la sauvegarde de la clé API');
+      if (
+        error instanceof Error &&
+        error.message.includes('Utilisateur non connecté')
+      ) {
+        onError?.('Vous devez être connecté pour sauvegarder votre clé API');
+      } else if (error instanceof Error) {
+        onError?.(error.message);
+      } else {
+        onError?.('Erreur lors de la sauvegarde de la clé API');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +102,16 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
       onSuccess?.('Clé API supprimée avec succès');
     } catch (error) {
       logger.error('Erreur lors de la suppression:', error);
-      onError?.('Erreur lors de la suppression de la clé API');
+      if (
+        error instanceof Error &&
+        error.message.includes('Utilisateur non connecté')
+      ) {
+        onError?.('Vous devez être connecté pour supprimer votre clé API');
+      } else if (error instanceof Error) {
+        onError?.(error.message);
+      } else {
+        onError?.('Erreur lors de la suppression de la clé API');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -124,7 +149,16 @@ export const PexelsApiKeyForm: React.FC<PexelsApiKeyFormProps> = ({
       }
     } catch (error) {
       logger.error('Erreur lors du test de la clé API:', error);
-      onError?.('Erreur lors du test de la clé API');
+      if (
+        error instanceof Error &&
+        error.message.includes('Utilisateur non connecté')
+      ) {
+        onError?.('Vous devez être connecté pour tester votre clé API');
+      } else if (error instanceof Error) {
+        onError?.(error.message);
+      } else {
+        onError?.('Erreur lors du test de la clé API');
+      }
     } finally {
       setIsLoading(false);
     }
