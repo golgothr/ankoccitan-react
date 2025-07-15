@@ -1,94 +1,139 @@
-import React from 'react';
+import { lazy, Suspense } from 'react';
 import {
-  BrowserRouter,
-  Routes,
-  Route,
+  createBrowserRouter,
+  RouterProvider,
   Navigate,
   useLocation,
 } from 'react-router-dom';
-const HomePage = React.lazy(() => import('./features/home/HomePage'));
-const AuthPage = React.lazy(() => import('./features/auth/AuthPage'));
-const DashboardPage = React.lazy(
-  () => import('./features/dashboard/DashboardPage')
-);
-const DecksPage = React.lazy(() => import('./features/decks/DecksPage'));
-const CardCreationPage = React.lazy(
+import { AppLayout } from './AppLayout';
+import { useAuth } from './core/hooks/useAuth';
+
+const HomePage = lazy(() => import('./features/home/HomePage'));
+const AuthPage = lazy(() => import('./features/auth/AuthPage'));
+const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage'));
+const DecksPage = lazy(() => import('./features/decks/DecksPage'));
+const CardCreationPage = lazy(
   () => import('./features/decks/pages/CardCreationPage')
 );
-const ImportPage = React.lazy(() => import('./features/import/ImportPage'));
-const TermsPage = React.lazy(() => import('./features/legal/TermsPage'));
-const PrivacyPage = React.lazy(() => import('./features/legal/PrivacyPage'));
-const NotFoundPage = React.lazy(() => import('./features/common/NotFoundPage'));
-import { useAuth } from './core/hooks/useAuth';
-import { AppLayout } from './AppLayout';
-import { SettingsPage } from './features/settings/SettingsPage';
+const ImportPage = lazy(() => import('./features/import/ImportPage'));
+const TermsPage = lazy(() => import('./features/legal/TermsPage'));
+const PrivacyPage = lazy(() => import('./features/legal/PrivacyPage'));
+const NotFoundPage = lazy(() => import('./features/common/NotFoundPage'));
+const SettingsPage = lazy(() => import('./features/settings/SettingsPage'));
 
-function RequireAuth({ children }: { children: React.ReactNode }) {
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+  </div>
+);
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isLoggedIn } = useAuth();
   const location = useLocation();
   if (!isLoggedIn) {
-    console.log(
-      '[RequireAuth] Utilisateur non connecté, redirection vers /auth'
-    );
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
   return <>{children}</>;
 }
 
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    children: [
+      {
+        path: '/',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <HomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/auth',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <AuthPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/dashboard',
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader />}>
+              <DashboardPage />
+            </Suspense>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/decks',
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader />}>
+              <DecksPage />
+            </Suspense>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/cards',
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader />}>
+              <CardCreationPage />
+            </Suspense>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/import',
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader />}>
+              <ImportPage />
+            </Suspense>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/settings',
+        element: (
+          <ProtectedRoute>
+            <Suspense fallback={<PageLoader />}>
+              <SettingsPage />
+            </Suspense>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/terms',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <TermsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/privacy',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <PrivacyPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '*',
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <NotFoundPage />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+]);
+
 export function AppRouter() {
-  return (
-    <BrowserRouter>
-      <React.Suspense fallback={<div>Chargement...</div>}>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route
-              path="/dashboard"
-              element={
-                <RequireAuth>
-                  <DashboardPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/decks"
-              element={
-                <RequireAuth>
-                  <DecksPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/cards"
-              element={
-                <RequireAuth>
-                  <CardCreationPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/import"
-              element={
-                <RequireAuth>
-                  <ImportPage />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/settings"
-              element={
-                <RequireAuth>
-                  <SettingsPage />
-                </RequireAuth>
-              }
-            />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
-      </React.Suspense>
-    </BrowserRouter>
-  );
+  return <RouterProvider router={router} />;
 }

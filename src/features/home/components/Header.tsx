@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import logo from '@/assets/logo.png';
 
 export function Header() {
@@ -61,6 +62,7 @@ export function Header() {
               <span className="relative z-10">{t('register')}</span>
               <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </Link>
+            <LanguageSelector />
           </nav>
         </div>
       </div>

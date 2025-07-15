@@ -29,7 +29,8 @@
     "clean": "rm -rf node_modules dist coverage .nyc_output",
     "clean:install": "npm run clean && npm install",
     "ci:full": "npm run lint && npm run format:check && npm run type-check && npm run test:coverage && npm run build",
-    "db:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/supabase.ts"
+    "db:types": "supabase gen types typescript --project-id $SUPABASE_PROJECT_ID > src/types/supabase.ts",
+    "generate:types": "tsx scripts/generate-types.ts"
   },
   "config": {
     "commitizen": {
@@ -40,13 +41,13 @@
     "@supabase/supabase-js": "^2.50.3",
     "@tanstack/react-query": "5.81.5",
     "axios": "1.10.0",
+    "i18next": "25.3.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-i18next": "15.6.0",
     "react-icons": "5.5.0",
     "react-router-dom": "^6.30.1",
-    "zustand": "5.0.6",
-    "i18next": "25.3.2",
-    "react-i18next": "15.6.0"
+    "zustand": "5.0.6"
   },
   "devDependencies": {
     "@commitlint/cli": "19.8.1",
@@ -69,9 +70,9 @@
     "cypress": "14.5.1",
     "cz-customizable": "^7.4.0",
     "eslint": "9.30.1",
+    "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-react-refresh": "0.4.20",
-    "eslint-plugin-react": "7.37.5",
     "globals": "16.2.0",
     "husky": "^9.1.7",
     "jsdom": "26.1.0",
@@ -80,6 +81,7 @@
     "prettier": "3.6.2",
     "storybook": "8.6.14",
     "tailwindcss": "^3.4.1",
+    "tsx": "^4.20.3",
     "typescript": "5.8.3",
     "typescript-eslint": "8.34.1",
     "vite": "6.3.5",
