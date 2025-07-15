@@ -3,16 +3,27 @@
 ## 🧪 Vue d'ensemble
 
 Ce projet utilise une approche de tests complète avec :
+
 - **Vitest** pour les tests unitaires et d'intégration
 - **React Testing Library** pour les tests de composants
 - **Cypress** pour les tests E2E
 - **TestWrapper personnalisé** pour les tests d'intégration avancés
+
+### Exécution des tests
+
+```bash
+npm install
+npm test              # Tests unitaires avec Vitest
+npm run test:e2e      # Tests end-to-end Cypress
+npm run test:e2e:open # Interface graphique Cypress
+```
 
 ## 🎯 TestWrapper - Tests d'Intégration Avancés
 
 ### Qu'est-ce que le TestWrapper ?
 
 Le `TestWrapper` est un composant personnalisé qui encapsule tous les providers nécessaires pour les tests d'intégration :
+
 - **QueryClient** pour React Query
 - **Router** pour TanStack Router
 - **Stores Zustand** (à venir)
@@ -35,7 +46,7 @@ render(<MonComposant />, {
 
 ```typescript
 interface TestWrapperOptions {
-  withRouter?: boolean;      // Inclure le router
+  withRouter?: boolean; // Inclure le router
   withQueryClient?: boolean; // Inclure React Query
 }
 ```
@@ -43,6 +54,7 @@ interface TestWrapperOptions {
 ### Exemples d'utilisation
 
 #### Test simple avec QueryClient
+
 ```typescript
 import { render, screen } from '@core/test/TestWrapper';
 import { LoginForm } from '@features/auth/components/LoginForm';
@@ -62,6 +74,7 @@ describe('LoginForm', () => {
 ```
 
 #### Test avec Router
+
 ```typescript
 import { render, screen } from '@core/test/TestWrapper';
 import { ProtectedRoute } from '@features/auth/components/ProtectedRoute';
@@ -99,7 +112,10 @@ vi.mocked(apiFunction).mockRejectedValue(mockApiError('Erreur réseau'));
 ### Utilitaires d'attente
 
 ```typescript
-import { waitForLoadingToFinish, waitForElementToBeRemoved } from '@core/test/TestWrapper';
+import {
+  waitForLoadingToFinish,
+  waitForElementToBeRemoved,
+} from '@core/test/TestWrapper';
 
 // Attendre la fin du chargement
 await waitForLoadingToFinish();
@@ -160,14 +176,14 @@ it('devrait être accessible', () => {
 
 ```typescript
 it('devrait empêcher les soumissions multiples', async () => {
-  const slowApi = vi.fn().mockImplementation(() => 
+  const slowApi = vi.fn().mockImplementation(() =>
     new Promise(resolve => setTimeout(resolve, 1000))
   );
 
   render(<Form />, { wrapperProps: { withQueryClient: true } });
 
   const submitButton = screen.getByRole('button');
-  
+
   // Cliquer plusieurs fois
   await user.click(submitButton);
   await user.click(submitButton);
@@ -272,10 +288,10 @@ import { expect, test } from '@storybook/test-runner';
 
 test('interaction test', async ({ canvasElement }) => {
   const canvas = within(canvasElement);
-  
+
   const button = canvas.getByRole('button');
   await userEvent.click(button);
-  
+
   await expect(canvas.getByText('Clicked!')).toBeInTheDocument();
 });
 ```
@@ -289,11 +305,11 @@ test('interaction test', async ({ canvasElement }) => {
 describe('Authentification', () => {
   it('devrait permettre la connexion', () => {
     cy.visit('/login');
-    
+
     cy.get('[data-testid="email-input"]').type('test@example.com');
     cy.get('[data-testid="password-input"]').type('password123');
     cy.get('[data-testid="submit-button"]').click();
-    
+
     cy.url().should('include', '/dashboard');
     cy.get('[data-testid="user-name"]').should('contain', 'Test User');
   });
@@ -373,4 +389,4 @@ it.skip('test ignoré', () => {
 
 ---
 
-**Tests maintenus avec ❤️ pour la qualité du code** 
+**Tests maintenus avec ❤️ pour la qualité du code**

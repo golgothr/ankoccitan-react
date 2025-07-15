@@ -56,6 +56,7 @@ export const ImageSearchButton = memo(
           type="button"
           onClick={() => setIsModalOpen(true)}
           className={buttonClasses}
+          aria-label="Ouvrir la recherche d'image"
         >
           <svg
             className={`${size === 'lg' ? 'h-5 w-5' : 'h-4 w-4'} mr-2`}

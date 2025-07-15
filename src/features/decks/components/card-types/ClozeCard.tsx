@@ -211,6 +211,7 @@ const ClozeCardComponent: React.FC<ClozeCardProps> = ({ onCardCreated }) => {
             onClick={handleTranslate}
             disabled={isTranslating || !formData.frenchText.trim()}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-occitan-orange hover:bg-occitan-red focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-occitan-orange disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            aria-label="Traduire le texte"
           >
             {isTranslating ? (
               <>
