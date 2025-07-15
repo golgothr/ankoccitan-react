@@ -324,6 +324,7 @@ VITE_REVIARDA_API_URL=https://revirada.example.com
 VITE_REVIARDA_API_KEY=ma_cle_revirada
 VITE_VOTZ_API_URL=https://votz.example.com
 VITE_VOTZ_API_KEY=ma_cle_votz
+VITE_SENTRY_DSN=votre_dsn_sentry
 ```
 
 ### Internationalisation
