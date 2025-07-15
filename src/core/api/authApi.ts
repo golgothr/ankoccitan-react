@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { env } from '../config/env';
+import { logger } from '../utils/logger';
 
 export interface LoginCredentials {
   email: string;
@@ -39,7 +40,7 @@ export const authApi = {
         token: data.session?.access_token || '',
       };
     } catch (error) {
-      console.error('Erreur lors de la connexion:', error);
+      logger.error('Erreur lors de la connexion:', error);
       throw error;
     }
   },
@@ -72,7 +73,7 @@ export const authApi = {
         token: data.session?.access_token || '',
       };
     } catch (error) {
-      console.error("Erreur lors de l'inscription:", error);
+      logger.error("Erreur lors de l'inscription:", error);
       throw error;
     }
   },
@@ -85,7 +86,7 @@ export const authApi = {
         throw new Error(error.message);
       }
     } catch (error) {
-      console.error('Erreur lors de la déconnexion:', error);
+      logger.error('Erreur lors de la déconnexion:', error);
       throw error;
     }
   },
@@ -99,7 +100,7 @@ export const authApi = {
       } = await supabase.auth.getUser();
 
       if (error) {
-        console.error(
+        logger.error(
           "Erreur lors de la vérification de l'authentification:",
           error
         );
@@ -108,7 +109,7 @@ export const authApi = {
 
       return user;
     } catch (error) {
-      console.error(
+      logger.error(
         "Erreur lors de la vérification de l'authentification:",
         error
       );
@@ -119,20 +120,20 @@ export const authApi = {
   // Vérifier la configuration Supabase
   async checkSupabaseConfig(): Promise<boolean> {
     try {
-      console.log('URL Supabase:', env.SUPABASE_URL);
-      console.log('Clé anonyme configurée:', !!env.SUPABASE_ANON_KEY);
+      logger.log('URL Supabase:', env.SUPABASE_URL);
+      logger.log('Clé anonyme configurée:', !!env.SUPABASE_ANON_KEY);
 
       // Test de connexion simple
       const { error } = await supabase.from('users').select('count').limit(1);
 
       if (error) {
-        console.error('Erreur de connexion Supabase:', error);
+        logger.error('Erreur de connexion Supabase:', error);
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error(
+      logger.error(
         'Erreur lors de la vérification de la configuration:',
         error
       );
@@ -146,20 +147,20 @@ export const authApi = {
  */
 export const checkSupabaseConfig = async (): Promise<boolean> => {
   try {
-    console.log('URL Supabase:', env.SUPABASE_URL);
-    console.log('Clé anonyme configurée:', !!env.SUPABASE_ANON_KEY);
+    logger.log('URL Supabase:', env.SUPABASE_URL);
+    logger.log('Clé anonyme configurée:', !!env.SUPABASE_ANON_KEY);
 
     // Test de connexion simple
     const { error } = await supabase.from('users').select('count').limit(1);
 
     if (error) {
-      console.error('Erreur de connexion Supabase:', error);
+      logger.error('Erreur de connexion Supabase:', error);
       return false;
     }
 
     return true;
   } catch (error) {
-    console.error('Erreur lors de la vérification de la configuration:', error);
+    logger.error('Erreur lors de la vérification de la configuration:', error);
     return false;
   }
 };
