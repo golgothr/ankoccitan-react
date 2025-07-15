@@ -21,6 +21,32 @@ export async function fetchUserDecks(): Promise<DeckRow[]> {
   return data || [];
 }
 
+export async function fetchUserDecksPage(
+  page: number,
+  pageSize: number
+): Promise<{ data: DeckRow[]; total: number }> {
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  const { data, error, count } = await supabase
+    .from('decks')
+    .select(
+      `
+      *,
+      cards(count)
+    `,
+      { count: 'exact' }
+    )
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error) {
+    logger.error('Erreur lors de la récupération des decks paginés:', error);
+    throw error;
+  }
+
+  return { data: data || [], total: count || 0 };
+}
+
 export async function fetchDeckStats() {
   // Récupérer le nombre total de decks
   const { count: deckCount, error: deckError } = await supabase

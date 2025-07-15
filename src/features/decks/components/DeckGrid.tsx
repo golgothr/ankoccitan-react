@@ -1,5 +1,6 @@
 import { Deck } from '../types/deck.types';
 import { DeckCard } from './DeckCard';
+import { FixedSizeList as List } from 'react-window';
 
 interface DeckGridProps {
   decks: Deck[];
@@ -59,6 +60,33 @@ export function DeckGrid({
             Créer un deck
           </button>
         </div>
+      </div>
+    );
+  }
+
+  if (decks.length > 50) {
+    const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => (
+      <div style={style} data-testid="virtualized-row">
+        <DeckCard
+          key={decks[index].id}
+          deck={decks[index]}
+          onEdit={onEdit}
+          onDuplicate={onDuplicate}
+          onDelete={onDelete}
+        />
+      </div>
+    );
+
+    return (
+      <div data-testid="virtualized-list">
+        <List
+          height={600}
+          itemCount={decks.length}
+          itemSize={220}
+          width="100%"
+        >
+          {Row}
+        </List>
       </div>
     );
   }
