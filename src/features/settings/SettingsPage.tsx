@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { PexelsApiKeyForm } from './components/PexelsApiKeyForm';
+import { ReviradaApiKeyForm } from './components/ReviradaApiKeyForm';
+import { VotzApiKeyForm } from './components/VotzApiKeyForm';
 import { Toast } from './components/Toast';
 
 export const SettingsPage: React.FC = () => {
@@ -55,22 +57,14 @@ export const SettingsPage: React.FC = () => {
               onSuccess={(message) => showToast(message, 'success')}
               onError={(message) => showToast(message, 'error')}
             />
-
-            {/* Placeholder pour d'autres services API */}
-            <div className="bg-gray-50 border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Autres services
-                </h3>
-                <span className="text-sm text-gray-500">
-                  Bientôt disponible
-                </span>
-              </div>
-              <p className="text-gray-500 text-sm">
-                D'autres services API seront bientôt disponibles pour enrichir
-                vos cartes.
-              </p>
-            </div>
+            <ReviradaApiKeyForm
+              onSuccess={(message) => showToast(message, 'success')}
+              onError={(message) => showToast(message, 'error')}
+            />
+            <VotzApiKeyForm
+              onSuccess={(message) => showToast(message, 'success')}
+              onError={(message) => showToast(message, 'error')}
+            />
           </div>
         </section>
 

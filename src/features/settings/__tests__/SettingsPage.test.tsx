@@ -9,6 +9,18 @@ vi.mock('../components/PexelsApiKeyForm', () => ({
   ),
 }));
 
+vi.mock('../components/ReviradaApiKeyForm', () => ({
+  ReviradaApiKeyForm: () => (
+    <div data-testid="revirada-api-key-form">Revirada API Key Form</div>
+  ),
+}));
+
+vi.mock('../components/VotzApiKeyForm', () => ({
+  VotzApiKeyForm: () => (
+    <div data-testid="votz-api-key-form">VOTZ API Key Form</div>
+  ),
+}));
+
 vi.mock('../components/Toast', () => ({
   Toast: () => <div data-testid="toast">Toast</div>,
 }));
@@ -29,8 +41,10 @@ describe('SettingsPage', () => {
     expect(screen.getByText('Clés API')).toBeInTheDocument();
     expect(screen.getByText('Préférences')).toBeInTheDocument();
 
-    // Vérifier que le formulaire Pexels est rendu
+    // Vérifier que les formulaires sont rendus
     expect(screen.getByTestId('pexels-api-key-form')).toBeInTheDocument();
+    expect(screen.getByTestId('revirada-api-key-form')).toBeInTheDocument();
+    expect(screen.getByTestId('votz-api-key-form')).toBeInTheDocument();
   });
 
   it('displays correct section descriptions', () => {
